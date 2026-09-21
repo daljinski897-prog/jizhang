@@ -209,7 +209,7 @@ function icon(name,size){size=size||20;var inner=ICONS[name]||ICONS['package'];r
 function delay(ms){return new Promise(function(r){setTimeout(r,ms)})}
 var CAT_KEYWORDS={
   '爱情':['爱情','恋人','对象','约会','恋爱','情侣','女友','男友','女朋友','男朋友','女盆友','男盆友','老婆','老公','宝宝','宝贝','北鼻','亲爱的','乖乖','哈尼','达令','媳妇儿','猪猪','纪念日','情人节','烛光晚餐','表白','相亲','脱单','拍拖','牵手','玫瑰','送花','二人晚餐','求婚','订婚','婚纱','蜜月','暗恋','脱单饭'],
-  '餐饮':['早饭','午饭','晚饭','饭','米线','米粉','奶茶','咖啡','外卖','吃饭','吃','喝','早餐','午餐','晚餐','夜宵','零食','水果','蔬菜','菜','饼','汉堡','炸鸡','茶','酒','饮料','宵夜','烧烤','火锅','麻辣烫','煎饼','包子','饺子','馄饨','豆浆','油条','蛋糕','甜点','冰淇淋','雪糕','小吃','食堂','餐厅','美团','饿了么','星巴克','瑞幸','蜜雪','肯德基','麦当劳','海底捞','拉面','炒饭','盖饭','盒饭','套餐','米饭','面条','生煎','锅贴','烧麦','肠粉','喝粥','凉皮','肉夹馍','螺蛳粉','酸辣粉','牛肉','猪肉','鸡肉','鸭肉','鱼','虾','蟹','寿司','刺身','披萨','三明治','面包','吐司','饼干','薯片','可乐','雪碧','果汁','酸奶','矿泉水','关东煮','串串','冒菜','干锅','香锅','烤鱼','小龙虾','牛排','羊排','鸡排','薯条','豆奶','面','餐'],
+  '餐饮':['早饭','午饭','晚饭','饭','米线','米粉','奶茶','咖啡','外卖','吃饭','吃','喝','早餐','午餐','晚餐','夜宵','零食','水果','蔬菜','菜','饼','汉堡','炸鸡','茶','酒','饮料','宵夜','烧烤','火锅','麻辣烫','煎饼','包子','饺子','馄饨','豆浆','油条','蛋糕','甜点','冰淇淋','雪糕','小吃','食堂','餐厅','美团','饿了么','星巴克','瑞幸','蜜雪','肯德基','麦当劳','海底捞','拉面','炒饭','盖饭','盒饭','套餐','米饭','面条','生煎','锅贴','烧麦','肠粉','喝粥','凉皮','肉夹馍','螺蛳粉','酸辣粉','牛肉','猪肉','鸡肉','鸭肉','鱼','虾','蟹','寿司','刺身','披萨','三明治','面包','吐司','饼干','薯片','可乐','雪碧','果汁','酸奶','矿泉水','关东煮','串串','冒菜','干锅','香锅','烤鱼','烤肠','烤冷面','淀粉肠','小龙虾','牛排','羊排','鸡排','薯条','豆奶','面','餐'],
   '交通':['打车','出租车','出租','地铁','公交','车费','停车','加油','滴滴','高铁','机票','火车','飞机','船费','骑行','单车','共享单车','充电','停车费','过路','高速','ETC','巴士','大巴','网约车','代驾','洗车','保养','车险','年检','罚款','违章','充电桩','顺风车','拼车','租车','轮渡','缆车','轻轨','有轨','磁悬浮','快车','专车','三轮车','摩托车','电动车','自行车','换乘','进站','出站','检票','登机','值机','行李','改签','退票','订票','抢票','车'],
   '购物':['购物','买衣服','买鞋','买包','淘宝','京东','拼多多','天猫','超市','纸巾','洗发','沐浴','牙膏','护肤','化妆品','数码','手机壳','数据线','充电器','裤子','裙子','外套','内衣','袜子','帽子','围巾','手套','雨伞','水杯','文具','饰品','手链','项链','耳环','戒指','眼镜','手表','背包','钱包','卡包','床单','被套','枕头','毛巾','拖把','扫把','垃圾桶','保鲜膜','洗衣液','洗洁精','消毒液','垃圾袋','收纳','衣架','挂钩','灯泡','插线板','电池','胶带','剪刀','梳子','镜子','花瓶','相框','钟表','摆件','玩偶','手办','乐高','拼图','买','鞋','包','迪奥','香奈儿','兰蔻','雅诗兰黛','欧莱雅','资生堂','圣罗兰','纪梵希','古驰','阿玛尼','海蓝之谜','科颜氏','娇兰','雅漾','理肤泉','雪花秀','兰芝','美宝莲','妮维雅','完美日记','花西子','珀莱雅','自然堂','玉兰油','倩碧','植村秀','娇韵诗','悦诗风吟','毛戈平','玛丽黛佳','蜜丝佛陀','耐克','阿迪达斯','优衣库','李宁','安踏','回力','匡威','彪马','斐乐','李维斯','波司登','海澜之家','无印良品','路易威登','爱马仕','蔻驰','普拉达','巴宝莉','北面','始祖鸟','斯凯奇','新百伦','安德玛','太平鸟','森马','美特斯邦威','华为','小米','三星','索尼','戴尔','联想','戴森','佳能','尼康','大疆','任天堂','OPPO','vivo','格力','美的','海尔','西门子','松下','宜家','名创优品','屈臣氏','丝芙兰',
 '凯迪拉克','奔驰','宝马','奥迪','丰田','大众','本田','特斯拉','别克','福特','沃尔沃','保时捷','雷克萨斯','马自达','日产','雪佛兰','林肯','路虎','捷豹','英菲尼迪','蔚来','理想','小鹏','比亚迪','三菱','斯巴鲁','劳斯莱斯','宾利','玛莎拉蒂','兰博基尼','法拉利','红旗','吉利','长安','五菱','哈弗','领克','坦克','埃安','雪铁龙','现代','起亚','问界','智己','极氪','极星','阿维塔',
@@ -343,15 +343,52 @@ function cleanNote(text,type){
     // ③ 纯阿拉伯数字：与字母相邻时保留（车型/型号如 E300、X5、iPhone15），否则视为金额删除
     .replace(/([A-Za-z])?\d+(?:\.\d+)?([A-Za-z])?/g,function(m,before,after){
       return(before||after)?m:'';
-    });
+    })
+    // ④ 单位后的角分残数（如“12块2”删掉12后剩“块2”），避免备注残留数字
+    .replace(/(?:块|元)\s*(?:\d+(?:\.\d+)?|[零一二三四五六七八九两])|(?:毛|角|分)\s*(?:\d+|[零一二三四五六七八九两])/g,'');
   var unitReg=/块|元|块钱|元钱|毛|角|半|RMB|￥|¥/g;
   if(type==='income'){
     return amtStripped.replace(/收到|进账|到账|打入|打来|转来|转账|收款|汇款|转入|代收/g,'').replace(unitReg,'').replace(/\s+/g,'').trim()
   }
   return amtStripped.replace(/首付|花了|花费|支出|付了|付款|支付|付|给|买了|买|花掉|用了|消费|充值|缴费|缴款|充|收|收到|进账|到账|之付/g,'').replace(unitReg,'').replace(/\s+/g,'').trim()
 }
-function smartSegment(text){var parts=text.split(/[，。；;,！!？?\n]+|然后|另外|再来|还有|接着/g).map(function(s){return s.trim()}).filter(function(s){return s});var segs=[];for(var p=0;p<parts.length;p++){var part=parts[p];var sp=part.split(/和|又/g).map(function(s){return s.trim()}).filter(function(s){return s});if(sp.length>1){var ok=sp.every(function(s){return /\d|块|元|百|千|万|十|毛|角/.test(s)});if(ok)segs=segs.concat(sp);else segs.push(part)}else segs.push(part)}segs=segs.map(function(s){return removeFillers(s)}).filter(function(s){return s});return segs}
-function parseVoiceToTransactions(text,mode){return delay(200).then(function(){if(!text||!text.trim())return{transactions:[]};var cleaned=fixSpeechErrors(text);var segs=smartSegment(cleaned);var recs=[];function pickType(s){if(mode==='income')return 'income';if(mode==='expense')return 'expense';return detectType(s)}for(var i=0;i<segs.length;i++){var seg=segs[i];var amt=extractAmount(seg);if(amt<=0)continue;var type=pickType(seg);var cat=detectCategory(seg,type);var note=cleanNote(seg,type);if(!note)note=seg.replace(/\d+/g,'').replace(/块|元|毛|角/g,'').trim()||cat;if(note.length>15)note=note.slice(0,15);recs.push({category:cat,amount:Math.round(amt*100)/100,note:note,type:type})}if(recs.length===0){var amt2=extractAmount(cleaned);if(amt2>0){var t2=pickType(cleaned),c2=detectCategory(cleaned,t2),n2=cleanNote(cleaned,t2)||c2;if(n2.length>15)n2=n2.slice(0,15);recs.push({category:c2,amount:Math.round(amt2*100)/100,note:n2,type:t2})}}return{transactions:recs}})}
+// 按金额边界分段：一句连记多笔、中间无标点时，在上一笔金额结束处切开
+function splitByAmounts(text){
+  if(!text)return[text];
+  // 金额串：带单位（块/元/毛/角/分，可带角分尾数）或不带单位的阿拉伯数字（可带亿万千百）
+  var re=/(?:\d+(?:\.\d+)?|[零一二三四五六七八九十百千万两]+)(?:\s*(?:亿|万|千|百))?\s*(?:块钱|元钱|块|元|毛|角|分|RMB|￥|¥)(?:\s*(?:\d|[零一二三四五六七八九两])(?:\s*(?:毛|角))?(?:\s*(?:\d|[零一二三四五六七八九两])\s*分?)?)?|\d+(?:\.\d+)?(?:\s*(?:亿|万|千|百))?/g;
+  var ms=[],m;
+  while((m=re.exec(text))!==null){if(!m[0]){re.lastIndex++;continue}ms.push({s:m.index,e:m.index+m[0].length,t:m[0]})}
+  if(ms.length<2)return[text];
+  var cuts=[],VERB=/[买花收充缴点用加来]|付了|付款|支付|消费/,UNIT=/[块元毛角分]/;
+  for(var i=1;i<ms.length;i++){
+    var gap=text.slice(ms[i-1].e,ms[i].s);
+    if(!gap)continue;
+    var bothUnit=UNIT.test(ms[i-1].t)&&UNIT.test(ms[i].t);
+    if(VERB.test(gap)||(bothUnit&&gap.length<=6&&!/\d/.test(gap)))cuts.push(ms[i-1].e);
+  }
+  if(!cuts.length)return[text];
+  var out=[],prev=0;
+  for(var j=0;j<cuts.length;j++){out.push(text.slice(prev,cuts[j]));prev=cuts[j]}
+  out.push(text.slice(prev));
+  return out.filter(function(s){return s.trim()});
+}
+function smartSegment(text){
+  var parts=text.split(/[，。；;,！!？?\n]+|然后|另外|再来|还有|接着/g).map(function(s){return s.trim()}).filter(function(s){return s});
+  var segs=[];
+  for(var p=0;p<parts.length;p++){
+    var subs=splitByAmounts(parts[p]);
+    for(var q=0;q<subs.length;q++){
+      var part=subs[q];
+      var sp=part.split(/和|又/g).map(function(s){return s.trim()}).filter(function(s){return s});
+      if(sp.length>1){var ok=sp.every(function(s){return /\d|块|元|百|千|万|十|毛|角/.test(s)});if(ok)segs=segs.concat(sp);else segs.push(part)}
+      else segs.push(part)
+    }
+  }
+  segs=segs.map(function(s){return removeFillers(s)}).filter(function(s){return s});
+  return segs
+}
+function parseVoiceToTransactions(text,mode){return delay(200).then(function(){if(!text||!text.trim())return{transactions:[]};var cleaned=fixSpeechErrors(text);var segs=smartSegment(cleaned);var recs=[];function pickType(s){if(mode==='income')return 'income';if(mode==='expense')return 'expense';return detectType(s)}for(var i=0;i<segs.length;i++){var seg=segs[i];var amt=extractAmount(seg);if(amt<=0)continue;var type=pickType(seg);var cat=detectCategory(seg,type);var note=cleanNote(seg,type);if(!note)note=seg.replace(/\d+(?:\.\d+)?/g,'').replace(/[零一二三四五六七八九十百千万两]+/g,'').replace(/块|元|毛|角|分|RMB|￥|¥/g,'').trim()||cat;if(note.length>15)note=note.slice(0,15);recs.push({category:cat,amount:Math.round(amt*100)/100,note:note,type:type})}if(recs.length===0){var amt2=extractAmount(cleaned);if(amt2>0){var t2=pickType(cleaned),c2=detectCategory(cleaned,t2),n2=cleanNote(cleaned,t2)||c2;if(n2.length>15)n2=n2.slice(0,15);recs.push({category:c2,amount:Math.round(amt2*100)/100,note:n2,type:t2})}}return{transactions:recs}})}
 function saveTransaction(tx){return delay(30).then(function(){var list=JSON.parse(localStorage.getItem('aiBillTxs')||'[]');tx.id=Date.now()+Math.random();list.unshift(tx);localStorage.setItem('aiBillTxs',JSON.stringify(list));return tx})}
 function deleteTransaction(id){return delay(30).then(function(){var list=JSON.parse(localStorage.getItem('aiBillTxs')||'[]');list=list.filter(function(t){return t.id!==id});localStorage.setItem('aiBillTxs',JSON.stringify(list));return{success:true}})}
 
