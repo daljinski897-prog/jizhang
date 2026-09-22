@@ -148,6 +148,16 @@ svg{display:block}
 .text-input-area textarea:focus{border-color:var(--primary)}
 .text-input-area textarea::placeholder{color:var(--text-mute)}
 @media(min-width:481px){.app{box-shadow:0 0 0 1px var(--border)}}
+.mapping-list{margin:8px 0 12px}
+.mapping-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border:1px solid var(--border);border-radius:var(--r-md);margin-bottom:6px;background:var(--bg)}
+.mapping-item__left{display:flex;align-items:center;gap:8px;font-size:14px;flex:1;min-width:0}
+.mapping-item__kw{font-weight:600;color:var(--text)}
+.mapping-item__arrow{color:var(--text-mute);font-size:12px}
+.mapping-item__cat{font-size:13px;color:var(--primary);font-weight:600}
+.mapping-item__type{font-size:11px;padding:2px 6px;border-radius:4px;margin-left:4px}
+.mapping-item__type--expense{background:#FEF2F2;color:#DC2626}
+.mapping-item__type--income{background:#F0FDF4;color:#16A34A}
+.mapping-empty{text-align:center;padding:20px;color:var(--text-mute);font-size:13px}
 </style>
 </head>
 <body>
@@ -255,7 +265,7 @@ var INCOME_CAT_KEYWORDS={
 var SPEECH_FIXES=[['快钱','块钱'],['事十','四十'],['事八','十八'],['事二','十二'],['事五','十五'],['事三','十三'],['事六','十六'],['事七','十七'],['事九','十九'],['事四','十四'],['白','百'],['签','千'],['碗','万'],['留','六'],['武','五'],['量','两'],['气','七'],['吧块','八块'],['吧元','八元'],['思','四'],['是十','四十'],['是二','十二'],['是三','十三'],['是五','十五'],['是六','十六'],['是七','十七'],['是八','十八'],['是九','十九'],['酒块','九块'],['酒元','九元'],['另','零'],['灵','零'],['山','三'],['散','三'],['路','六'],['已','一'],['以','一'],['快','块'],['原','元'],['员','元'],['圆','元'],['是','十']];
 var PHRASE_FIXES=[['女盆友','女朋友'],['男盆友','男朋友'],['大车','打车'],['做范','做饭'],['叫美图','叫美团'],['饿了吗','饿了么'],['新巴克','星巴克'],['瑞信','瑞幸'],['蜜雪冰橙','蜜雪冰城'],['煎饼果籽','煎饼果子'],['肉夹磨','肉夹馍'],['螺丝粉','螺蛳粉'],['酸辣份','酸辣粉'],['海底捞鱼','海底捞'],['肯德机','肯德基'],['麦当老','麦当劳'],['汗堡','汉堡'],['披撒','披萨'],['三明志','三明治'],['优你库','优衣库'],['花肺','花费'],['之付','支付'],['消费卷','消费券'],['打字','打车']];
 function fixSpeechErrors(text){var r=text;for(var i=0;i<PHRASE_FIXES.length;i++)r=r.replace(new RegExp(PHRASE_FIXES[i][0],'g'),PHRASE_FIXES[i][1]);for(var i=0;i<SPEECH_FIXES.length;i++)r=r.replace(new RegExp(SPEECH_FIXES[i][0],'g'),SPEECH_FIXES[i][1]);return r}
-var FILLER_RE=/那个|这个|嗯|啊|呢|嘛|就是|对吧|好的|额|呃|说一下|记一下|记账/g;
+var FILLER_RE=/那个|这个|嗯|啊|呢|嘛|就是|对吧|好的|额|呃|说一下|记一下|记账|哦|呀|哎|噢|唔|诶|的话|就是说/g;
 function removeFillers(text){return text.replace(FILLER_RE,'').trim()}
 var CN_NUM={'零':0,'一':1,'二':2,'两':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9,'十':10,'百':100,'千':1000,'万':10000};
 function parseCnNum(s){
@@ -345,7 +355,7 @@ function extractAmount(text){
   return m?parseFloat(m[1]):0;
 }
 var LOVE_STRONG=['爱情','恋人','对象','约会','恋爱','情侣','女友','男友','女朋友','男朋友','女盆友','男盆友','老婆','老公','宝宝','宝贝','北鼻','亲爱的','乖乖','哈尼','达令','媳妇儿','猪猪','honey','darling','baby','情人节','烛光晚餐','表白','相亲','拍拖','二人晚餐','求婚','订婚','蜜月','纪念日','脱单','暗恋'];
-function detectCategory(text,type){var cats=type==='income'?INCOME_CATEGORIES:CATEGORIES,map=type==='income'?INCOME_CAT_KEYWORDS:CAT_KEYWORDS,fallback=type==='income'?'其他收入':'其他';if(type==='expense'){for(var li=0;li<LOVE_STRONG.length;li++){if(text.indexOf(LOVE_STRONG[li])!==-1)return '爱情'}}var best=fallback,bestScore=0;for(var ci=0;ci<cats.length;ci++){var name=cats[ci];if(name!==fallback&&text.indexOf(name)!==-1){var ns=name.length+1000;if(ns>bestScore){bestScore=ns;best=name}}}for(var cat in map){var kws=map[cat],score=0;for(var i=0;i<kws.length;i++){if(text.indexOf(kws[i])!==-1){var w=kws[i].length===1?1:kws[i].length+2;score+=w}}if(score>bestScore){bestScore=score;best=cat}}return best}
+function detectCategory(text,type){var cats=type==='income'?INCOME_CATEGORIES:CATEGORIES,map=type==='income'?INCOME_CAT_KEYWORDS:CAT_KEYWORDS,fallback=type==='income'?'其他收入':'其他';var custom=getCustomMappings().filter(function(m){return m.type===type});var bestMatch=null,bestMatchLen=0;for(var ci0=0;ci0<custom.length;ci0++){if(text.indexOf(custom[ci0].keyword)!==-1&&custom[ci0].keyword.length>bestMatchLen){bestMatch=custom[ci0].category;bestMatchLen=custom[ci0].keyword.length}}if(bestMatch)return bestMatch;if(type==='expense'){for(var li=0;li<LOVE_STRONG.length;li++){if(text.indexOf(LOVE_STRONG[li])!==-1)return '爱情'}}var best=fallback,bestScore=0;for(var ci=0;ci<cats.length;ci++){var name=cats[ci];if(name!==fallback&&text.indexOf(name)!==-1){var ns=name.length+1000;if(ns>bestScore){bestScore=ns;best=name}}}for(var cat in map){var kws=map[cat],score=0;for(var i=0;i<kws.length;i++){if(text.indexOf(kws[i])!==-1){var w=kws[i].length===1?1:kws[i].length+2;score+=w}}if(score>bestScore){bestScore=score;best=cat}}return best}
 function detectType(text){for(var i=0;i<INCOME_KEYWORDS.length;i++)if(text.indexOf(INCOME_KEYWORDS[i])!==-1)return 'income';return 'expense'}
 function cleanNote(text,type){
   var amtStripped=text
@@ -364,9 +374,9 @@ function cleanNote(text,type){
     .replace(/(?:块|元)\s*(?:\d+(?:\.\d+)?|[零一二三四五六七八九两])|(?:毛|角|分)\s*(?:\d+|[零一二三四五六七八九两])/g,'');
   var unitReg=/块|元|块钱|元钱|毛|角|半|RMB|￥|¥/g;
   if(type==='income'){
-    return amtStripped.replace(/收到|进账|到账|打入|打来|转来|转账|收款|汇款|转入|代收/g,'').replace(unitReg,'').replace(/\s+/g,'').trim()
+    return amtStripped.replace(/收到|进账|到账|打入|打来|转来|转账|收款|汇款|转入|代收|又有|并且|以及|还有|然后|另外|再来|接着|加上|再有|同时|此外|而且/g,'').replace(unitReg,'').replace(/\s+/g,'').trim()
   }
-  return amtStripped.replace(/首付|花了|花费|支出|付了|付款|支付|付|给|买了|买|花掉|用了|消费|充值|缴费|缴款|充|收|收到|进账|到账|之付/g,'').replace(unitReg,'').replace(/\s+/g,'').trim()
+  return amtStripped.replace(/首付|花了|花费|支出|付了|付款|支付|付|给|买了|买|花掉|用了|消费|充值|缴费|缴款|充|收|收到|进账|到账|之付|又有|并且|以及|还有|然后|另外|再来|接着|加上|再有|同时|此外|而且/g,'').replace(unitReg,'').replace(/\s+/g,'').trim()
 }
 // 按金额边界分段：一句连记多笔、中间无标点时，在上一笔金额结束处切开
 function splitByAmounts(text){
@@ -390,13 +400,13 @@ function splitByAmounts(text){
   return out.filter(function(s){return s.trim()});
 }
 function smartSegment(text){
-  var parts=text.split(/[，。；;,！!？?\n]+|然后|另外|再来|还有|接着/g).map(function(s){return s.trim()}).filter(function(s){return s});
+  var parts=text.split(/[，。；;,！!？?\n]+|然后|另外|再来|还有|接着|又有|并且|以及|加上|再有|接下来|再加上|同时|此外|而且|啊|额|嗯|哦|呃|唉|嘛|吧|呀|呢|哎|噢|唔|诶/g).map(function(s){return s.trim()}).filter(function(s){return s});
   var segs=[];
   for(var p=0;p<parts.length;p++){
     var subs=splitByAmounts(parts[p]);
     for(var q=0;q<subs.length;q++){
       var part=subs[q];
-      var sp=part.split(/和|又/g).map(function(s){return s.trim()}).filter(function(s){return s});
+      var sp=part.split(/和|又有|又/g).map(function(s){return s.trim()}).filter(function(s){return s});
       if(sp.length>1){var ok=sp.every(function(s){return /\d|块|元|百|千|万|十|毛|角/.test(s)});if(ok)segs=segs.concat(sp);else segs.push(part)}
       else segs.push(part)
     }
@@ -413,7 +423,7 @@ function deleteTransaction(id){return delay(30).then(function(){var list=JSON.pa
 function exportBackup(){
   try{
     var txs=JSON.parse(localStorage.getItem('aiBillTxs')||'[]');
-    var data={app:'aiBill',version:1,exportedAt:new Date().toISOString(),txs:txs,txVer:localStorage.getItem('aiBillVer')||''};
+    var data={app:'aiBill',version:1,exportedAt:new Date().toISOString(),txs:txs,txVer:localStorage.getItem('aiBillVer')||'',mappings:JSON.parse(localStorage.getItem('aiBillMappings')||'[]')};
     var blob=new Blob([JSON.stringify(data)],{type:'application/json;charset=utf-8'});
     var url=URL.createObjectURL(blob);
     var d=new Date(),pad=function(n){return String(n).padStart(2,'0')};
@@ -427,6 +437,16 @@ function exportBackup(){
 }
 function openConfigModal(){state.configModal=true;state.importStatus=null;render()}
 function closeConfigModal(){state.configModal=false;state.importStatus=null;render()}
+function openMappingModal(){state.mappingModal=true;state.mappingForm={type:'expense',keyword:'',category:'餐饮'};render()}
+function closeMappingModal(){state.mappingModal=false;render()}
+function saveMapping(){
+  var kw=(state.mappingForm.keyword||'').trim();
+  if(!kw){showToast('请输入关键词');return}
+  saveCustomMapping({keyword:kw,category:state.mappingForm.category,type:state.mappingForm.type});
+  state.mappingForm.keyword='';
+  showToast('映射已保存')
+}
+function deleteMapping(id){deleteCustomMapping(id);showToast('已删除映射')}
 // 选择备份文件后读取、校验并合并恢复（按 id 去重，不会覆盖或重复，保证连续性）
 function importBackup(file){
   if(!file)return;
@@ -449,6 +469,13 @@ function importBackup(file){
       merged.sort(function(a,b){return(b.timestamp||0)-(a.timestamp||0)});
       localStorage.setItem('aiBillTxs',JSON.stringify(merged));
       state.txs=merged;
+      if(data&&data.app==='aiBill'&&Array.isArray(data.mappings)){
+        var curMaps=JSON.parse(localStorage.getItem('aiBillMappings')||'[]');
+        var mapSeen={},mapMerged=[];
+        curMaps.forEach(function(m){if(m.id!==undefined)mapSeen[m.id]=1;mapMerged.push(m)});
+        data.mappings.forEach(function(m){if(m.id!==undefined&&mapSeen[m.id])return;if(m.id===undefined)m.id=Date.now()+Math.random();mapMerged.push(m)});
+        localStorage.setItem('aiBillMappings',JSON.stringify(mapMerged));
+      }
       state.importStatus={type:'ok',msg:'恢复成功：新增 '+added+' 条，当前共 '+merged.length+' 条记录'};
       render();
       showToast('恢复成功，共 '+merged.length+' 条');
@@ -461,8 +488,13 @@ function importBackup(file){
   reader.readAsText(file);
 }
 
+// ========== 自定义映射 ==========
+function getCustomMappings(){return JSON.parse(localStorage.getItem('aiBillMappings')||'[]')}
+function saveCustomMapping(item){var list=getCustomMappings();list.push({keyword:item.keyword,category:item.category,type:item.type,id:Date.now()+Math.random()});localStorage.setItem('aiBillMappings',JSON.stringify(list));return list}
+function deleteCustomMapping(id){var list=getCustomMappings().filter(function(m){return m.id!==id});localStorage.setItem('aiBillMappings',JSON.stringify(list));return list}
+
 // ========== App State ==========
-var state={tab:'record',txs:[],isRecording:false,voiceModal:false,entryMode:'auto',transcript:'',parsedRecords:[],manualModal:false,configModal:false,importStatus:null,selectedMonth:new Date().toISOString().slice(0,7),statDim:'month',statPeriod:new Date().toISOString().slice(0,7),toast:'',form:{type:'expense',amount:'',category:'餐饮',note:''},voiceStatus:'',voiceStatusType:''};
+var state={tab:'record',txs:[],isRecording:false,voiceModal:false,entryMode:'auto',transcript:'',parsedRecords:[],manualModal:false,configModal:false,importStatus:null,selectedMonth:new Date().toISOString().slice(0,7),statDim:'month',statPeriod:new Date().toISOString().slice(0,7),toast:'',form:{type:'expense',amount:'',category:'餐饮',note:''},voiceStatus:'',voiceStatusType:'',mappingModal:false,mappingForm:{type:'expense',keyword:'',category:'餐饮'}};
 
 // ========== Voice Engine v4 ==========
 var recognition=null,wantRecording=false,finalTranscript='',restartTimer=null,noResultTimer=null;
@@ -749,7 +781,7 @@ function switchStatDim(dim){
 function $(sel){return document.querySelector(sel)}
 function todayStr(){var d=new Date(),wk=['日','一','二','三','四','五','六'];return d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日 星期'+wk[d.getDay()]}
 function monthLabel(ym){var p=ym.split('-');return p[0]+'年'+parseInt(p[1])+'月'}
-function showToast(msg){state.toast=msg;render();setTimeout(function(){state.toast='';render()},2000)}
+function showToast(msg){state.toast=msg;render();setTimeout(function(){state.toast='';var el=document.querySelector('.toast');if(el)el.remove();else render()},2000)}
 
 function getMonthExpense(){var ym=new Date().toISOString().slice(0,7),s=0;for(var i=0;i<state.txs.length;i++)if(state.txs[i].type==='expense'&&state.txs[i].date.startsWith(ym))s+=state.txs[i].amount;return s}
 function getMonthIncome(){var ym=new Date().toISOString().slice(0,7),s=0;for(var i=0;i<state.txs.length;i++)if(state.txs[i].type==='income'&&state.txs[i].date.startsWith(ym))s+=state.txs[i].amount;return s}
@@ -803,7 +835,7 @@ function renderLineChart(dd,lineColor,areaColor){
 function render(){
   var app=$('#app'),html='';
   // Top bar（记录页内嵌于固定布局，统计页置于顶部）
-  var topBarHTML='<div class="top-bar"><div class="top-bar__row"><div><div class="top-bar__title">'+icon('wallet',22)+' 记账小管家</div><div class="top-bar__date">'+todayStr()+'</div></div><div class="top-bar__btns"><button class="top-bar__btn" onclick="exportBackup()">'+icon('download',17)+'导出</button><button class="top-bar__btn top-bar__btn--cfg" onclick="openConfigModal()">'+icon('settings',17)+'配置</button><button class="top-bar__add" onclick="openManualModal()">'+icon('plus',20)+'</button></div></div></div>';
+  var topBarHTML='<div class="top-bar"><div class="top-bar__row"><div><div class="top-bar__title">'+icon('wallet',22)+' 记账小管家</div><div class="top-bar__date">'+todayStr()+'</div></div><div class="top-bar__btns"><button class="top-bar__btn" onclick="exportBackup()">'+icon('download',17)+'导出</button><button class="top-bar__btn top-bar__btn--cfg" onclick="openConfigModal()">'+icon('settings',17)+'配置</button><button class="top-bar__add" onclick="openMappingModal()">'+icon('plus',20)+'</button></div></div></div>';
   if(state.tab==='record'){
     var exp=getMonthExpense(),inc=getMonthIncome(),cnt=getMonthCount();
     html+='<div class="page-record">'+topBarHTML;
@@ -881,9 +913,9 @@ function render(){
     var isIncome=state.entryMode==='income';
     var modalTitle=isIncome?'收入':'支出';
     // Primary: large auto-focus text input with keyboard mic guide
-    var placeholder=isIncome?'输入收入内容...&#10;&#10;例如：收到工资三千，红包两百&#10;理财收益一百二，退款五十':'输入支出内容...&#10;&#10;例如：午饭二十块，打车回家三十五&#10;买水果花了五十';
+    var placeholder=isIncome?'输入收入内容...&#10;&#10;例如：收到工资三千，红包两百&#10;理财收益一百二，退款五十&#10;午饭20元还有奶茶5元又有打车30元':'输入支出内容...&#10;&#10;例如：午饭二十块，打车回家三十五&#10;买水果花了五十&#10;午饭20元还有奶茶5元又有打车30元并且高铁100元以及圣罗兰300元';
     var inputHTML='<div class="text-input-area"><textarea id="text-input" style="min-height:120px;font-size:18px;line-height:1.8" placeholder="'+placeholder+'" oninput="textInputChange(this.value)" onkeydown="handleEnterKey(event)" onclick="event.stopPropagation()">'+(state.transcript||'')+'</textarea></div>';
-    var guideHTML=isIncome?'<div class="hint-box">'+icon('sparkles',16)+' 当前为收入模式，输入均按收入处理<br>支持中文口语数字（两千、一百二、九块九）<br>支持一句话记多笔，AI自动识别收入来源<br>来源：工资、奖金、红包、退款、报销、理财、兼职、租金、转账等</div>':'<div class="hint-box">'+icon('sparkles',16)+' 支持中文口语数字（两百、一百二、九块九）<br>支持一句话记多笔账，AI自动识别支出/收入与来源<br>收入来源：工资、奖金、红包、退款、报销、理财、兼职、租金、转账等</div>';
+    var guideHTML=isIncome?'<div class="hint-box">'+icon('sparkles',16)+' 当前为收入模式，输入均按收入处理<br>支持中文口语数字（两千、一百二、九块九）<br>支持一句话记多笔，口语连接词自动分段<br>支持：还有、又有、并且、以及、然后、另外、加上<br>口语填充词（啊、额、嗯、哦等）自动过滤<br>来源：工资、奖金、红包、退款、报销、理财、兼职、租金、转账等</div>':'<div class="hint-box">'+icon('sparkles',16)+' 支持中文口语数字（两百、一百二、九块九）<br>支持一句话记多笔账，口语连接词自动分段<br>支持：还有、又有、并且、以及、然后、另外、加上<br>口语填充词（啊、额、嗯、哦等）自动过滤<br>AI自动识别支出/收入与来源<br>收入来源：工资、奖金、红包、退款、报销、理财、兼职、租金、转账等</div>';
     var confirmLabel=isIncome?'确认收入':'确认支出';
     var confirmStyle=isIncome?'background:var(--success);color:#fff':'';
     html+='<div class="modal-overlay" '+overlayClick+'><div class="modal"><div class="modal__title">'+modalTitle+'</div>'+inputHTML+parsedHTML+'<div class="btn-row"><button class="btn btn--outline" onclick="event.stopPropagation();closeVoiceModal()">取消</button><button class="btn btn--primary" style="'+confirmStyle+'" onclick="event.stopPropagation();confirmParsed()" '+(state.parsedRecords.length?'':'disabled')+'>'+confirmLabel+'</button></div>'+guideHTML+'</div></div>';
@@ -912,6 +944,27 @@ function render(){
       +'3. 恢复为<b>合并方式</b>：不覆盖本机已有记录、不重复，可多次导入。</div>';
     html+='<div class="modal-overlay" onclick="if(event.target===this)closeConfigModal()"><div class="modal"><div class="modal__title">配置</div>'+guide+fileField+statusHTML+'<div class="btn-row"><button class="btn btn--primary" style="flex:1" onclick="closeConfigModal()">完成</button></div></div></div>';
   }
+  // Mapping modal（自定义映射）
+  if(state.mappingModal){
+    var mappings=getCustomMappings();
+    var mapListHTML='';
+    if(mappings.length){
+      mapListHTML='<div class="mapping-list">';
+      for(var mi=0;mi<mappings.length;mi++){var mp=mappings[mi],mpMeta=getCatMeta(mp.category,mp.type),mpTypeCls=mp.type==='income'?'mapping-item__type--income':'mapping-item__type--expense',mpTypeLabel=mp.type==='income'?'收入':'支出';
+        mapListHTML+='<div class="mapping-item"><div class="mapping-item__left">'+icon(mpMeta.icon,18)+' <span class="mapping-item__kw">'+mp.keyword+'</span> <span class="mapping-item__arrow">→</span> <span class="mapping-item__cat">'+mp.category+'</span> <span class="mapping-item__type '+mpTypeCls+'">'+mpTypeLabel+'</span></div><button class="tx-delete" onclick="deleteMapping('+mp.id+')">删除</button></div>';
+      }
+      mapListHTML+='</div>';
+    }else{
+      mapListHTML='<div class="mapping-empty">暂无自定义映射，请在下方添加</div>';
+    }
+    var mapCatList=state.mappingForm.type==='income'?INCOME_CATEGORIES:CATEGORIES;
+    var mapCatOpts='';
+    for(var mci=0;mci<mapCatList.length;mci++)mapCatOpts+='<option value="'+mapCatList[mci]+'"'+(state.mappingForm.category===mapCatList[mci]?' selected':'')+'>'+mapCatList[mci]+'</option>';
+    var mapExpBtn="state.mappingForm.type='expense';state.mappingForm.category='餐饮';render()";
+    var mapIncBtn="state.mappingForm.type='income';state.mappingForm.category='工资';render()";
+    var mapGuide='<div class="hint-box">'+icon('sparkles',16)+' 输入一个关键词（如：圣罗兰、手办、剧本杀），选择对应分类。<br>保存后，下次输入包含该关键词的内容时，自动归入所选分类。<br>自定义映射优先于系统默认识别。</div>';
+    html+='<div class="modal-overlay" onclick="if(event.target===this)closeMappingModal()"><div class="modal"><div class="modal__title">自定义映射</div>'+mapListHTML+'<div class="field"><label class="field__label">类型</label><div class="type-toggle"><button class="type-toggle__btn '+(state.mappingForm.type==='expense'?'type-toggle__btn--active':'')+'" onclick="'+mapExpBtn+'">支出</button><button class="type-toggle__btn '+(state.mappingForm.type==='income'?'type-toggle__btn--active':'')+'" onclick="'+mapIncBtn+'">收入</button></div></div><div class="field"><label class="field__label">关键词</label><input class="field__input" type="text" placeholder="输入关键词，如：圣罗兰" value="'+state.mappingForm.keyword+'" oninput="state.mappingForm.keyword=this.value"></div><div class="field"><label class="field__label">映射分类</label><select class="field__select" onchange="state.mappingForm.category=this.value">'+mapCatOpts+'</select></div><div class="btn-row"><button class="btn btn--outline" onclick="closeMappingModal()">取消</button><button class="btn btn--primary" onclick="saveMapping()">添加映射</button></div>'+mapGuide+'</div></div>';
+  }
   if(state.toast)html+='<div class="toast">'+state.toast+'</div>';
   app.innerHTML=html;
 }
@@ -935,6 +988,7 @@ window.startVoice=startVoice;window.stopVoice=stopVoice;
 window.confirmParsed=confirmParsed;window.openManualModal=openManualModal;window.closeManualModal=closeManualModal;
 window.saveManual=saveManual;window.deleteTx=deleteTx;window.textInputChange=textInputChange;
 window.exportBackup=exportBackup;window.openConfigModal=openConfigModal;window.closeConfigModal=closeConfigModal;window.importBackup=importBackup;
+window.openMappingModal=openMappingModal;window.closeMappingModal=closeMappingModal;window.saveMapping=saveMapping;window.deleteMapping=deleteMapping;
 document.addEventListener('DOMContentLoaded',init);
 </script>
 </body>
