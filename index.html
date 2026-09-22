@@ -364,20 +364,36 @@ var LOVE_STRONG=['爱情','恋人','对象','约会','恋爱','情侣','女友',
 function detectCategory(text,type){var cats=type==='income'?INCOME_CATEGORIES:CATEGORIES,map=type==='income'?INCOME_CAT_KEYWORDS:CAT_KEYWORDS,fallback=type==='income'?'其他收入':'其他';var custom=getCustomMappings().filter(function(m){return m.type===type});var bestMatch=null,bestMatchLen=0;for(var ci0=0;ci0<custom.length;ci0++){if(text.indexOf(custom[ci0].keyword)!==-1&&custom[ci0].keyword.length>bestMatchLen){bestMatch=custom[ci0].category;bestMatchLen=custom[ci0].keyword.length}}if(bestMatch)return bestMatch;if(type==='expense'){for(var li=0;li<LOVE_STRONG.length;li++){if(text.indexOf(LOVE_STRONG[li])!==-1)return '爱情'}}var best=fallback,bestScore=0;for(var ci=0;ci<cats.length;ci++){var name=cats[ci];if(name!==fallback&&text.indexOf(name)!==-1){var ns=name.length+1000;if(ns>bestScore){bestScore=ns;best=name}}}for(var cat in map){var kws=map[cat],score=0;for(var i=0;i<kws.length;i++){if(text.indexOf(kws[i])!==-1){var w=kws[i].length===1?1:kws[i].length+2;score+=w}}if(score>bestScore){bestScore=score;best=cat}}return best}
 function detectType(text){for(var i=0;i<INCOME_KEYWORDS.length;i++)if(text.indexOf(INCOME_KEYWORDS[i])!==-1)return 'income';return 'expense'}
 function cleanNote(text,type){
+  var SAFE_SUFFIX=/[钟享析数别裂离类配手子组店割区歧心量期批布工层个种项次回遍下场节章页条句步级件分]/;
+  var SAFE_PREFIX=/第|分/;
+  var isSafeCNNum=function(src,idx,len){
+    if(idx>0&&SAFE_PREFIX.test(src.charAt(idx-1)))return true;
+    var after=idx+len;
+    if(after<src.length&&SAFE_SUFFIX.test(src.charAt(after)))return true;
+    return false;
+  };
   var amtStripped=text
     // ① 阿拉伯数字+中文量级（40万、3千、1.5万）整体删除
     .replace(/\d+(?:\.\d+)?\s*(亿|万|千|百)/g,'')
-    // ② 中文数字串：仅在能独立构成正数时删除；单独的“百/千/万”作为品牌用字保留（如万宝龙、百果园）
-    .replace(/[零一二三四五六七八九十百千万两]+/g,function(m){
+    // ② 中文数字串：能独立构成正数才删除；
+    //    单独"百/千/万"（品牌如万宝龙）保留；
+    //    前后紧邻真实词汇结构（第X、分钟、分享、分期、一个、X层、X次…）的数字跳过不删，避免误伤"十分钟""一个优惠""分期付款"
+    .replace(/[零一二三四五六七八九十百千万两]+/g,function(m,idx,src){
       if(m.length===1&&(m==='百'||m==='千'||m==='万'))return m;
-      return parseCnNum(m)>0?'':m;
+      if(parseCnNum(m)<=0)return m;
+      if(isSafeCNNum(src,idx,m.length))return m;
+      return '';
     })
-    // ③ 纯阿拉伯数字：与字母相邻时保留（车型/型号如 E300、X5、iPhone15），否则视为金额删除
-    .replace(/([A-Za-z])?\d+(?:\.\d+)?([A-Za-z])?/g,function(m,before,after){
-      return(before||after)?m:'';
+    // ③ 纯阿拉伯数字：与字母相邻保留（E300/X5/iPhone15）；与安全后缀相邻保留（3分钟、5层），否则删除
+    .replace(/([A-Za-z])?\d+(?:\.\d+)?([A-Za-z])?/g,function(m,before,after,idx,src){
+      if(before||after)return m;
+      var end=idx+m.length;
+      if(end<src.length&&SAFE_SUFFIX.test(src.charAt(end)))return m;
+      return '';
     })
-    // ④ 单位后的角分残数（如“12块2”删掉12后剩“块2”），避免备注残留数字
-    .replace(/(?:块|元)\s*(?:\d+(?:\.\d+)?|[零一二三四五六七八九两])|(?:毛|角|分)\s*(?:\d+|[零一二三四五六七八九两])/g,'');
+    // ④ 单位残数 + 货币"分/分钱"清洗
+    //    负向环视: (?<!部) 避开"部分"; 负向后续 避开"分钟/分享/分析/分数/分别/分期/分批"等真实词
+    .replace(/(?:块|元)\s*(?:\d+(?:\.\d+)?|[零一二三四五六七八九两])|(?:毛|角|分)\s*(?:\d+|[零一二三四五六七八九两])|分钱|(?<!部)分(?![钟享析数别裂离类配手子组店割区歧心量期批布工])/g,'');
   var unitReg=/块|元|块钱|元钱|毛|角|半|RMB|￥|¥/g;
   if(type==='income'){
     return amtStripped.replace(/收到|进账|到账|打入|打来|转来|转账|收款|汇款|转入|代收|又有|并且|以及|还有|然后|另外|再来|接着|加上|再有|同时|此外|而且/g,'').replace(unitReg,'').replace(/\s+/g,'').trim()
