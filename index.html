@@ -1116,11 +1116,25 @@ function renderLineChart(dd,lineColor,areaColor,pointClick,clickType){
   return'<svg class="chart-svg" viewBox="0 0 '+W+' '+H+'">'+grid+yl+'<polygon points="'+area+'" fill="'+areaColor+'"/><polyline points="'+pts+'" fill="none" stroke="'+lineColor+'" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>'+dots+xl+hits+'</svg>';
 }
 // ========== 统计明细弹窗（DOM 注入，不走整体 render，打开/关闭均无闪烁） ==========
-// 打开明细弹窗时锁定页面滚动，避免滑动“穿透”到下方统计页
+// 拦截“穿透”手势：命中可滚动容器才放行；条目不足(不可滚动)时一律阻止，滑动时保持不变
+function __modalTouchMove__(e){
+  var el=e.target;
+  while(el&&el.nodeType===1){
+    if(el.scrollHeight>el.clientHeight+1){
+      var oy='';try{oy=getComputedStyle(el).overflowY}catch(err){}
+      if(oy==='auto'||oy==='scroll')return;   // 可滚动 → 放行，交由该容器滚动
+    }
+    el=el.parentNode;
+  }
+  e.preventDefault();
+}
+// 明细弹窗打开时锁定页面滚动，避免滑动“穿透”到下方统计页
 function __syncScrollLock__(){
   var has=!!document.getElementById('__detail_modal__');
   document.documentElement.style.overflow=has?'hidden':'';
   document.body.style.overflow=has?'hidden':'';
+  if(has)document.addEventListener('touchmove',__modalTouchMove__,{passive:false});
+  else document.removeEventListener('touchmove',__modalTouchMove__);
 }
 function __fmtMD__(date){date=String(date||'');return parseInt(date.slice(5,7),10)+'月'+parseInt(date.slice(8,10),10)+'日';}
 // showDate=true 时副标题显示「M月D日 · 分类 · 时间」（分类明细跨多日，需要看出是几号）
