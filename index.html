@@ -54,7 +54,7 @@ svg{display:block}
 .fab{position:fixed;bottom:calc(var(--nav-h)+16px);left:50%;transform:translateX(-50%);width:56px;height:56px;border-radius:50%;background:var(--primary);color:#fff;border:4px solid var(--bg);box-shadow:0 4px 16px rgba(13,148,136,.4);display:flex;align-items:center;justify-content:center;z-index:150;transition:transform .15s}
 .fab:active{transform:translateX(-50%) scale(.9)}
 .fab svg{width:24px;height:24px}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s ease}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s ease;overscroll-behavior:contain}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .modal{background:var(--surface);width:100%;max-width:var(--max-w);border-radius:var(--r-lg) var(--r-lg) 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));max-height:85vh;overflow-y:auto;animation:slideUp .28s cubic-bezier(.22,1,.36,1)}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
@@ -126,9 +126,13 @@ svg{display:block}
 .month-chip--active{background:var(--primary);color:#fff;border-color:var(--primary)}
 .mchip-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--primary);margin-left:4px;vertical-align:middle;opacity:.5}
 .month-chip--active .mchip-dot{background:#fff;opacity:.9}
-.record-period{flex-shrink:0}
-.record-period .month-selector{padding:10px 16px 0}
-.record-period .month-selector:last-child{padding-bottom:4px}
+.top-bar__date-btn{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--primary);background:transparent;border:none;padding:2px 0;margin-top:2px;cursor:pointer;font-family:inherit}
+.top-bar__date-btn svg{width:13px;height:13px}
+.top-bar__date-caret{font-size:9px;opacity:.8;transform:translateY(-1px)}
+.rp-years{display:flex;gap:8px;overflow-x:auto;padding:0 0 12px;scrollbar-width:none}
+.rp-years::-webkit-scrollbar{display:none}
+.rp-months{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:4px}
+.rp-months .month-chip{padding:9px 0;display:flex;align-items:center;justify-content:center}
 .chart-card{background:var(--surface);border-radius:var(--r-lg);padding:16px;margin:0 16px 12px;box-shadow:var(--shadow-sm);border:1px solid var(--border)}
 .chart-card__title{font-size:13px;color:var(--text-sub);margin-bottom:12px;display:flex;align-items:center;gap:6px;font-weight:600}
 .chart-card__title svg{width:16px;height:16px}
@@ -180,7 +184,8 @@ svg{display:block}
 .dup-note__tip{margin-top:10px;font-size:12px;color:var(--text-mute);line-height:1.7}
 .mapping-list-scroll{max-height:55vh;overflow-y:auto;overflow-x:hidden;padding:4px 2px 4px;margin:8px 0 12px;border:1px solid var(--border);border-radius:var(--r-md);background:var(--surface)}
 .mapping-list-scroll .mapping-item{margin:6px 8px}
-.detail-list{max-height:60vh;overflow-y:auto;margin:4px 0 12px}
+.detail-modal{max-height:50vh;display:flex;flex-direction:column;overflow:hidden}
+.detail-list{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;margin:4px 0 12px}
 .detail-row{display:flex;align-items:center;gap:10px;padding:10px 2px;border-bottom:1px solid var(--border)}
 .detail-row:last-child{border-bottom:none}
 .detail-row__body{flex:1;min-width:0}
@@ -265,6 +270,7 @@ var ICONS={
   download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
   upload:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>',
   settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
+  calendar:'<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
 };
 function icon(name,size){size=size||20;var inner=ICONS[name]||ICONS['package'];return '<svg xmlns="http://www.w3.org/2000/svg" width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">'+inner+'</svg>'}
 
@@ -1015,17 +1021,38 @@ function getGroupedTxs(ym){var g={};for(var i=0;i<state.txs.length;i++){var t=st
 function getRecordYears(){var y={};y[new Date().toISOString().slice(0,4)]=true;for(var i=0;i<state.txs.length;i++)y[state.txs[i].date.slice(0,4)]=true;return Object.keys(y).sort(function(a,b){return b.localeCompare(a)})}
 // 记账页：某年中有记账的月份集合（用于月份胶囊上的小圆点提示）
 function getRecordMonthsWithData(year){var m={};for(var i=0;i<state.txs.length;i++){var d=state.txs[i].date;if(d.slice(0,4)===year)m[parseInt(d.slice(5,7),10)]=true}return m}
-function switchRecordMonth(ym){state.recordPeriod=ym;render()}
-function switchRecordYear(year){state.recordPeriod=__bestRecordPeriod__(year,state.recordPeriod.slice(5,7));render()}
-// 切换年份时挑选合适月份：优先保留原月份（该年有数据时），否则取该年有数据的最新月
-function __bestRecordPeriod__(year,preferMonth){
-  var hasData=function(p){for(var i=0;i<state.txs.length;i++)if(state.txs[i].date.slice(0,7)===p)return true;return false};
-  var ym=year+'-'+preferMonth;
-  if(hasData(ym))return ym;
-  var months=[];
-  for(var i=0;i<state.txs.length;i++){var d=state.txs[i].date;if(d.slice(0,4)===year)months.push(d.slice(0,7))}
-  if(months.length){months.sort();return months[months.length-1]}
-  return ym;
+// ========== 记账页「切换月份」弹窗（DOM 注入，打开/关闭均无闪烁） ==========
+function __rpYearChipsHTML__(year){
+  var years=getRecordYears(),h='';
+  for(var i=0;i<years.length;i++)h+='<div class="month-chip '+(years[i]===year?'month-chip--active':'')+'" onclick="rpPickYear(\''+years[i]+'\')">'+years[i]+'年</div>';
+  return h;
+}
+function __rpMonthChipsHTML__(year){
+  var ym=state.recordPeriod,md=getRecordMonthsWithData(year),h='';
+  for(var m=1;m<=12;m++){var val=year+'-'+String(m).padStart(2,'0'),sel=(val===ym);
+    h+='<div class="month-chip '+(sel?'month-chip--active':'')+'" onclick="rpPickMonth(\''+val+'\')">'+m+'月'+(md[m]?'<span class="mchip-dot"></span>':'')+'</div>';}
+  return h;
+}
+function buildRecordPeriodModalHTML(){
+  var year=state.recordPeriod.slice(0,4);
+  return '<div id="__record_period_modal__" class="modal-overlay" style="z-index:10000" onclick="if(event.target===this)closeRecordPeriodModal()"><div class="modal"><div class="modal__title">切换月份</div><div class="rp-years" id="__rp_years__">'+__rpYearChipsHTML__(year)+'</div><div class="rp-months" id="__rp_months__">'+__rpMonthChipsHTML__(year)+'</div><div class="btn-row"><button class="btn btn--primary" style="flex:1" onclick="closeRecordPeriodModal()">完成</button></div></div></div>';
+}
+function openRecordPeriodModal(){
+  closeRecordPeriodModal();
+  var tmp=document.createElement('div');tmp.innerHTML=buildRecordPeriodModalHTML();document.body.appendChild(tmp.firstElementChild);
+}
+function closeRecordPeriodModal(){var el=document.getElementById('__record_period_modal__');if(el&&el.parentNode)el.parentNode.removeChild(el);}
+// 切换年份：只刷新弹窗内的年份/月份网格，不触发页面 render，避免闪烁
+function rpPickYear(year){
+  var yb=document.getElementById('__rp_years__'),mb=document.getElementById('__rp_months__');
+  if(yb)yb.innerHTML=__rpYearChipsHTML__(year);
+  if(mb)mb.innerHTML=__rpMonthChipsHTML__(year);
+}
+// 选中月份：先关闭弹窗再渲染列表，确保无闪烁
+function rpPickMonth(ym){
+  closeRecordPeriodModal();
+  state.recordPeriod=ym;
+  render();
 }
 function getMonthOptions(){var m={};m[new Date().toISOString().slice(0,7)]=true;for(var i=0;i<state.txs.length;i++)m[state.txs[i].date.slice(0,7)]=true;return Object.keys(m).sort(function(a,b){return b.localeCompare(a)}).map(function(ym){return{value:ym,label:monthLabel(ym)}})}
 function getYearOptions(){var y={};y[new Date().toISOString().slice(0,4)]=true;for(var i=0;i<state.txs.length;i++)y[state.txs[i].date.slice(0,4)]=true;return Object.keys(y).sort(function(a,b){return b.localeCompare(a)}).map(function(yr){return{value:yr,label:yr+'年'}})}
@@ -1065,8 +1092,8 @@ function __trendLabel__(date){
   if(date.length===10)return parseInt(date.slice(5,7),10)+'/'+parseInt(date.slice(8,10),10);
   return date;
 }
-// pointClick：可选，传入全局函数名字符串；传入则每个数据点可点击（调用 pointClick(date)）
-function renderLineChart(dd,lineColor,areaColor,pointClick){
+// pointClick：可选，传入全局函数名字符串；传入则每个数据点可点击（调用 pointClick(date,clickType)）
+function renderLineChart(dd,lineColor,areaColor,pointClick,clickType){
   lineColor=lineColor||'#0D9488';areaColor=areaColor||'rgba(13,148,136,.12)';
   if(dd.length<2)return'<p style="text-align:center;color:var(--text-mute);padding:40px 0">数据不足</p>';
   var W=300,H=180,pad={t:16,r:16,b:32,l:36},xMax=dd.length-1,yMax=Math.max.apply(null,dd.map(function(d){return d.amount}))*1.15,pW=W-pad.l-pad.r,pH=H-pad.t-pad.b;
@@ -1083,46 +1110,60 @@ function renderLineChart(dd,lineColor,areaColor,pointClick){
   if(pointClick){
     for(var h=0;h<dd.length;h++){
       var left=(h===0)?pad.l:((xs(h-1)+xs(h))/2),right=(h===xMax)?(W-pad.r):((xs(h)+xs(h+1))/2);
-      hits+='<rect x="'+left.toFixed(1)+'" y="'+pad.t+'" width="'+Math.max(right-left,1).toFixed(1)+'" height="'+pH+'" fill="transparent" style="cursor:pointer" onclick="'+pointClick+'(\''+dd[h].date+'\')"><title>'+__trendLabel__(dd[h].date)+' ¥'+dd[h].amount.toFixed(2)+'（点击查看明细）</title></rect>';
+      hits+='<rect x="'+left.toFixed(1)+'" y="'+pad.t+'" width="'+Math.max(right-left,1).toFixed(1)+'" height="'+pH+'" fill="transparent" style="cursor:pointer" onclick="'+pointClick+'(\''+dd[h].date+'\',\''+(clickType||'expense')+'\')"><title>'+__trendLabel__(dd[h].date)+' ¥'+dd[h].amount.toFixed(2)+'（点击查看明细）</title></rect>';
     }
   }
   return'<svg class="chart-svg" viewBox="0 0 '+W+' '+H+'">'+grid+yl+'<polygon points="'+area+'" fill="'+areaColor+'"/><polyline points="'+pts+'" fill="none" stroke="'+lineColor+'" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>'+dots+xl+hits+'</svg>';
 }
 // ========== 统计明细弹窗（DOM 注入，不走整体 render，打开/关闭均无闪烁） ==========
-function __txDetailRowHTML__(t){
-  var meta=getCatMeta(t.category,t.type),sign=t.type==='expense'?'-':'+',cls=t.type==='expense'?'tx-amount--expense':'tx-amount--income';
-  return '<div class="detail-row"><div class="tx-icon" style="background:'+meta.bg+';color:'+meta.color+'">'+icon(meta.icon,20)+'</div><div class="detail-row__body"><div class="detail-row__note">'+(t.note||t.category)+'</div><div class="detail-row__meta">'+t.category+' · '+(t.time||'')+'</div></div><div class="tx-amount '+cls+'">'+sign+'¥'+t.amount.toFixed(2)+'</div></div>';
+// 打开明细弹窗时锁定页面滚动，避免滑动“穿透”到下方统计页
+function __syncScrollLock__(){
+  var has=!!document.getElementById('__detail_modal__');
+  document.documentElement.style.overflow=has?'hidden':'';
+  document.body.style.overflow=has?'hidden':'';
 }
-function __detachDetailModal__(){var el=document.getElementById('__detail_modal__');if(el&&el.parentNode)el.parentNode.removeChild(el);}
+function __fmtMD__(date){date=String(date||'');return parseInt(date.slice(5,7),10)+'月'+parseInt(date.slice(8,10),10)+'日';}
+// showDate=true 时副标题显示「M月D日 · 分类 · 时间」（分类明细跨多日，需要看出是几号）
+function __txDetailRowHTML__(t,showDate){
+  var meta=getCatMeta(t.category,t.type),sign=t.type==='expense'?'-':'+',cls=t.type==='expense'?'tx-amount--expense':'tx-amount--income';
+  var metaLine=(showDate&&t.date?__fmtMD__(t.date)+' · ':'')+t.category+' · '+(t.time||'');
+  return '<div class="detail-row"><div class="tx-icon" style="background:'+meta.bg+';color:'+meta.color+'">'+icon(meta.icon,20)+'</div><div class="detail-row__body"><div class="detail-row__note">'+(t.note||t.category)+'</div><div class="detail-row__meta">'+metaLine+'</div></div><div class="tx-amount '+cls+'">'+sign+'¥'+t.amount.toFixed(2)+'</div></div>';
+}
+function __detachDetailModal__(){var el=document.getElementById('__detail_modal__');if(el&&el.parentNode)el.parentNode.removeChild(el);__syncScrollLock__();}
 function __closeDetailModal__(){__detachDetailModal__();}
-function __injectDetailModal__(titleHTML,list,emptyText){
+function __injectDetailModal__(titleHTML,list,emptyText,showDate){
   __detachDetailModal__();
   var total=0;for(var i=0;i<list.length;i++)total+=list[i].amount;
-  var body=list.length?('<div class="detail-list">'+list.map(function(t){return __txDetailRowHTML__(t)}).join('')+'</div>'):'<div class="mapping-empty">'+emptyText+'</div>';
-  var html='<div id="__detail_modal__" class="modal-overlay" style="z-index:10000" onclick="if(event.target===this)__closeDetailModal__()"><div class="modal"><div class="modal__title">'+titleHTML+(list.length?'<span class="detail-total">合计 ¥'+total.toFixed(2)+'</span>':'')+'</div>'+body+'<div class="btn-row"><button class="btn btn--primary" style="flex:1" onclick="__closeDetailModal__()">完成</button></div></div></div>';
+  var body=list.length?('<div class="detail-list">'+list.map(function(t){return __txDetailRowHTML__(t,showDate)}).join('')+'</div>'):'<div class="mapping-empty">'+emptyText+'</div>';
+  var html='<div id="__detail_modal__" class="modal-overlay" style="z-index:10000" onclick="if(event.target===this)__closeDetailModal__()"><div class="modal detail-modal"><div class="modal__title">'+titleHTML+(list.length?'<span class="detail-total">合计 ¥'+total.toFixed(2)+'</span>':'')+'</div>'+body+'<div class="btn-row"><button class="btn btn--primary" style="flex:1" onclick="__closeDetailModal__()">完成</button></div></div></div>';
   var tmp=document.createElement('div');tmp.innerHTML=html;document.body.appendChild(tmp.firstElementChild);
+  __syncScrollLock__();
 }
-// 某一天的支出明细（月维度：点击每日趋势端点触发）
-function __openDayDetail__(date){
+// 某一天的账目明细（月维度：点击每日趋势端点触发）type: 'expense'|'income'
+function __openDayDetail__(date,type){
+  type=type||'expense';
   var day=String(date||'');
-  var list=state.txs.filter(function(t){return t.date===day&&t.type==='expense'}).sort(function(a,b){return (b.timestamp||0)-(a.timestamp||0)});
-  var p=day.split('-');
-  var title=parseInt(p[1],10)+'月'+parseInt(p[2],10)+'日 支出';
-  __injectDetailModal__(title,list,'当日暂无支出');
+  var list=state.txs.filter(function(t){return t.date===day&&t.type===type}).sort(function(a,b){return (b.timestamp||0)-(a.timestamp||0)});
+  var title=__fmtMD__(day)+' '+(type==='income'?'收入':'支出');
+  __injectDetailModal__(title,list,type==='income'?'当日暂无收入':'当日暂无支出',false);
 }
-// 某分类在当前统计周期内的账目明细（点击分类明细行触发）
-function __openCatDetail__(cat){
+// 某分类在当前统计周期内的账目明细（点击分类明细行触发）；跨多日，故显示日期
+function __openCatDetail__(cat,type){
+  type=type||'expense';
   var scope=state.statPeriod;
-  var list=state.txs.filter(function(t){return t.type==='expense'&&t.category===cat&&t.date.startsWith(scope)}).sort(function(a,b){return (b.timestamp||0)-(a.timestamp||0)});
+  var list=state.txs.filter(function(t){return t.type===type&&t.category===cat&&t.date.startsWith(scope)}).sort(function(a,b){return (b.timestamp||0)-(a.timestamp||0)});
   var dimLabel=state.statDim==='year'?'本年':(state.statDim==='month'?'本月':'今日');
   var title=cat+' 明细<span class="detail-sub">'+dimLabel+'</span>';
-  __injectDetailModal__(title,list,'暂无明细');
+  __injectDetailModal__(title,list,'暂无明细',true);
 }
 
 function render(){
   var app=$('#app'),html='';
   // Top bar（记录页内嵌于固定布局，统计页置于顶部）
-  var topBarHTML='<div class="top-bar"><div class="top-bar__row"><div><div class="top-bar__title">'+icon('wallet',22)+' 记账小管家</div><div class="top-bar__date">'+todayStr()+'</div></div><div class="top-bar__btns"><button class="top-bar__btn" onclick="exportBackup()">'+icon('download',17)+'导出</button><button class="top-bar__btn top-bar__btn--cfg" onclick="openConfigModal()">'+icon('settings',17)+'配置</button><button class="top-bar__add" onclick="openMappingModal()">'+icon('plus',20)+'</button></div></div></div>';
+  var topDateHTML=(state.tab==='record')
+    ?'<button class="top-bar__date-btn" onclick="openRecordPeriodModal()" title="点击切换月份">'+icon('calendar',13)+' '+todayStr()+'<span class="top-bar__date-caret">▼</span></button>'
+    :'<div class="top-bar__date">'+todayStr()+'</div>';
+  var topBarHTML='<div class="top-bar"><div class="top-bar__row"><div><div class="top-bar__title">'+icon('wallet',22)+' 记账小管家</div>'+topDateHTML+'</div><div class="top-bar__btns"><button class="top-bar__btn" onclick="exportBackup()">'+icon('download',17)+'导出</button><button class="top-bar__btn top-bar__btn--cfg" onclick="openConfigModal()">'+icon('settings',17)+'配置</button><button class="top-bar__add" onclick="openMappingModal()">'+icon('plus',20)+'</button></div></div></div>';
   if(state.tab==='record'){
     var ym=state.recordPeriod||new Date().toISOString().slice(0,7);
     state.recordPeriod=ym;
@@ -1130,14 +1171,6 @@ function render(){
     var mLbl=(ym===curYm)?'本月':(parseInt(ym.slice(5,7),10)+'月');
     var exp=getMonthExpense(ym),inc=getMonthIncome(ym),cnt=getMonthCount(ym);
     html+='<div class="page-record">'+topBarHTML;
-    // 年 / 月 切换：只展示选中月份的账目，不再全量累计
-    var rYears=getRecordYears(),rYear=ym.slice(0,4),rMData=getRecordMonthsWithData(rYear);
-    var rYearHTML='';
-    for(var ry=0;ry<rYears.length;ry++)rYearHTML+='<div class="month-chip '+(rYears[ry]===rYear?'month-chip--active':'')+'" onclick="switchRecordYear(\''+rYears[ry]+'\')">'+rYears[ry]+'年</div>';
-    var rMonthHTML='';
-    for(var rm=1;rm<=12;rm++){var rmVal=rYear+'-'+String(rm).padStart(2,'0'),rmSel=(rmVal===ym);
-      rMonthHTML+='<div class="month-chip '+(rmSel?'month-chip--active':'')+'" onclick="switchRecordMonth(\''+rmVal+'\')">'+rm+'月'+(rMData[rm]?'<span class="mchip-dot"></span>':'')+'</div>';}
-    html+='<div class="record-period"><div class="month-selector">'+rYearHTML+'</div><div class="month-selector">'+rMonthHTML+'</div></div>';
     html+='<div class="summary-card reveal"><div class="summary-item"><div class="summary-item__num summary-item__num--expense">¥'+exp.toFixed(2)+'</div><div class="summary-item__label">'+mLbl+'支出</div></div><div class="summary-item"><div class="summary-item__num summary-item__num--neutral">'+cnt+'</div><div class="summary-item__label">'+mLbl+'笔数</div></div><div class="summary-item"><div class="summary-item__num summary-item__num--income">¥'+inc.toFixed(2)+'</div><div class="summary-item__label">'+mLbl+'收入</div></div></div>';
     html+='<div class="record-entry" style="padding:12px 16px 4px;display:flex;gap:10px"><button class="btn btn--primary voice-big-btn" style="flex:1" onclick="openVoiceModal(\'expense\')">'+icon('plus',20)+' 支出</button><button class="btn voice-big-btn" style="flex:1;background:var(--success);color:#fff;box-shadow:0 2px 8px rgba(22,163,74,.3)" onclick="openVoiceModal(\'income\')">'+icon('arrow-down-left',20)+' 收入</button></div>';
     var groups=getGroupedTxs(ym);
@@ -1176,23 +1209,23 @@ function render(){
     var stats=getStatsData();
     var dimLabel=dim==='year'?'本年':(dim==='month'?'本月':'今日');
     var trendTitle=dim==='year'?'每月':'每日';
-    // 月维度：每日支出趋势的端点可点击 → 查看当日支出明细
-    var expTrendClick=(dim==='month')?'__openDayDetail__':'';
-    var expTrendHint=(dim==='month')?'<span style="font-size:11px;color:var(--text-mute);font-weight:400;margin-left:4px">点击查看当日</span>':'';
+    // 月维度：每日趋势的端点可点击 → 查看当日支出/收入明细
+    var trendClick=(dim==='month')?'__openDayDetail__':'';
+    var trendHint=(dim==='month')?'<span style="font-size:11px;color:var(--text-mute);font-weight:400;margin-left:4px">点击查看当日</span>':'';
     var balance=stats.totalIncome-stats.totalExpense;
     html+='<div class="summary-card reveal"><div class="summary-item"><div class="summary-item__num summary-item__num--expense">¥'+stats.totalExpense.toFixed(2)+'</div><div class="summary-item__label">'+dimLabel+'支出</div></div><div class="summary-item"><div class="summary-item__num '+(balance>=0?'summary-item__num--income':'summary-item__num--expense')+'">¥'+balance.toFixed(2)+'</div><div class="summary-item__label">'+dimLabel+'结余</div></div><div class="summary-item"><div class="summary-item__num summary-item__num--income">¥'+stats.totalIncome.toFixed(2)+'</div><div class="summary-item__label">'+dimLabel+'收入</div></div></div>';
     if(stats.totalExpense>0){
       html+='<div class="chart-card reveal" style="animation-delay:.05s"><div class="chart-card__title">'+icon('pie-chart',16)+' 支出分类占比</div>'+renderDonut(stats.catList,stats.totalExpense,'总支出','#1C1917','expense')+'</div>';
-      if(stats.dailyData.length>1)html+='<div class="chart-card reveal" style="animation-delay:.1s"><div class="chart-card__title">'+icon('line-chart',16)+' '+trendTitle+'支出趋势'+expTrendHint+'</div>'+renderLineChart(stats.dailyData,'#DC2626','rgba(220,38,38,.12)',expTrendClick)+'</div>';
+      if(stats.dailyData.length>1)html+='<div class="chart-card reveal" style="animation-delay:.1s"><div class="chart-card__title">'+icon('line-chart',16)+' '+trendTitle+'支出趋势'+trendHint+'</div>'+renderLineChart(stats.dailyData,'#DC2626','rgba(220,38,38,.12)',trendClick,'expense')+'</div>';
       html+='<div class="chart-card reveal" style="animation-delay:.15s"><div class="chart-card__title">'+icon('bar-chart-3',16)+' 支出分类明细</div>';
       for(var ci=0;ci<stats.catList.length;ci++){var c=stats.catList[ci],meta2=CATEGORY_META[c.name]||CATEGORY_META['其他'],pct=(c.amount/stats.totalExpense*100).toFixed(1);html+='<div class="cat-row cat-row--clickable" onclick="__openCatDetail__(\''+c.name+'\')"><div class="cat-row__left"><span class="cat-dot" style="background:'+meta2.color+'"></span>'+c.name+' <span style="font-size:11px;color:var(--text-mute)">('+pct+'%)</span></div><span class="cat-row__amt">¥'+c.amount.toFixed(2)+'</span></div>'}
       html+='</div>';
     }
     if(stats.totalIncome>0){
       html+='<div class="chart-card reveal" style="animation-delay:.1s"><div class="chart-card__title">'+icon('pie-chart',16)+' 收入来源占比</div>'+renderDonut(stats.incomeCatList,stats.totalIncome,'总收入','#16A34A','income')+'</div>';
-      if(stats.incomeDailyData.length>1)html+='<div class="chart-card reveal" style="animation-delay:.15s"><div class="chart-card__title">'+icon('line-chart',16)+' '+trendTitle+'收入趋势</div>'+renderLineChart(stats.incomeDailyData,'#16A34A','rgba(22,163,74,.12)')+'</div>';
+      if(stats.incomeDailyData.length>1)html+='<div class="chart-card reveal" style="animation-delay:.15s"><div class="chart-card__title">'+icon('line-chart',16)+' '+trendTitle+'收入趋势'+trendHint+'</div>'+renderLineChart(stats.incomeDailyData,'#16A34A','rgba(22,163,74,.12)',trendClick,'income')+'</div>';
       html+='<div class="chart-card reveal" style="animation-delay:.2s"><div class="chart-card__title">'+icon('bar-chart-3',16)+' 收入来源明细</div>';
-      for(var ii=0;ii<stats.incomeCatList.length;ii++){var ic=stats.incomeCatList[ii],meta4=getCatMeta(ic.name,'income'),ipct=(ic.amount/stats.totalIncome*100).toFixed(1);html+='<div class="cat-row"><div class="cat-row__left"><span class="cat-dot" style="background:'+meta4.color+'"></span>'+ic.name+' <span style="font-size:11px;color:var(--text-mute)">('+ipct+'%)</span></div><span class="cat-row__amt" style="color:var(--success)">¥'+ic.amount.toFixed(2)+'</span></div>'}
+      for(var ii=0;ii<stats.incomeCatList.length;ii++){var ic=stats.incomeCatList[ii],meta4=getCatMeta(ic.name,'income'),ipct=(ic.amount/stats.totalIncome*100).toFixed(1);html+='<div class="cat-row cat-row--clickable" onclick="__openCatDetail__(\''+ic.name+'\',\'income\')"><div class="cat-row__left"><span class="cat-dot" style="background:'+meta4.color+'"></span>'+ic.name+' <span style="font-size:11px;color:var(--text-mute)">('+ipct+'%)</span></div><span class="cat-row__amt" style="color:var(--success)">¥'+ic.amount.toFixed(2)+'</span></div>'}
       html+='</div>';
     }
     if(stats.totalExpense===0&&stats.totalIncome===0){
@@ -1274,7 +1307,7 @@ window.exportBackup=exportBackup;window.openConfigModal=openConfigModal;window.c
 window.openMappingModal=openMappingModal;window.closeMappingModal=closeMappingModal;window.openMappingListModal=openMappingListModal;window.closeMappingListModal=closeMappingListModal;window.saveMapping=saveMapping;window.deleteMapping=deleteMapping;
 window.__mappingSetType__=__mappingSetType__;window.__hideDupMappingModal__=__hideDupMappingModal__;window.__resolveDupMapping__=__resolveDupMapping__;
 window.__openDayDetail__=__openDayDetail__;window.__openCatDetail__=__openCatDetail__;window.__closeDetailModal__=__closeDetailModal__;
-window.switchRecordMonth=switchRecordMonth;window.switchRecordYear=switchRecordYear;
+window.openRecordPeriodModal=openRecordPeriodModal;window.closeRecordPeriodModal=closeRecordPeriodModal;window.rpPickYear=rpPickYear;window.rpPickMonth=rpPickMonth;
 document.addEventListener('DOMContentLoaded',init);
 </script>
 </body>
