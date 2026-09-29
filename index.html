@@ -133,7 +133,7 @@ svg{display:block}
 .cat-row__left{display:flex;align-items:center;gap:8px;font-size:14px}
 .cat-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 .cat-row__amt{font-family:var(--mono);font-weight:600}
-.toast{position:fixed;top:72px;left:50%;transform:translateX(-50%);background:rgba(28,25,23,.9);color:#fff;padding:8px 20px;border-radius:20px;font-size:13px;z-index:500;animation:toastIn .25s ease}
+.toast{position:fixed;top:72px;left:50%;transform:translateX(-50%);background:rgba(28,25,23,.9);color:#fff;padding:8px 20px;border-radius:20px;font-size:13px;z-index:20000;animation:toastIn .25s ease}
 @keyframes toastIn{from{opacity:0;transform:translate(-50%,-8px)}to{opacity:1;transform:translate(-50%,0)}}
 .hint-box{margin-top:14px;padding:12px;background:var(--bg);border-radius:var(--r-md);font-size:12px;color:var(--text-sub);line-height:1.8}
 .voice-big-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;font-size:16px;font-weight:700;border-radius:var(--r-md);box-shadow:0 2px 8px rgba(13,148,136,.3)}
@@ -158,6 +158,26 @@ svg{display:block}
 .mapping-item__type--expense{background:#FEF2F2;color:#DC2626}
 .mapping-item__type--income{background:#F0FDF4;color:#16A34A}
 .mapping-empty{text-align:center;padding:20px;color:var(--text-mute);font-size:13px}
+.mapping-entry-row{display:flex;align-items:center;padding:14px 16px;border:1px solid var(--border);border-radius:var(--r-md);background:var(--bg);margin:8px 0 14px;gap:12px}
+.mapping-entry-row__left{display:flex;align-items:center;gap:10px;font-size:15px;flex:1;min-width:0}
+.mapping-entry-row__title{font-weight:700;color:var(--text);font-size:15px}
+.mapping-entry-row__count{font-size:12px;color:var(--text-mute);padding:2px 8px;background:var(--surface);border-radius:999px;margin-left:2px}
+.mapping-entry-row__btn{padding:4px 12px;font-size:15px;font-weight:600;color:#fff;background:var(--primary);border:none;border-radius:var(--r-md);box-shadow:0 1px 4px rgba(13,148,136,.3);line-height:1.4;white-space:nowrap;cursor:pointer;flex-shrink:0;transition:opacity .15s}
+.mapping-entry-row__btn:hover{opacity:.9}
+.mapping-entry-row__btn:active{opacity:.75}
+.dup-note{background:var(--bg);border-radius:var(--r-md);padding:14px;margin-bottom:16px;font-size:14px;color:var(--text-sub);line-height:1.8}
+.dup-note__title{font-weight:700;color:var(--text);margin-bottom:8px}
+.dup-note__row{display:flex;align-items:center;gap:8px;margin:4px 0}
+.dup-note__row svg{width:16px;height:16px;flex-shrink:0}
+.dup-note__tag{font-size:11px;padding:1px 6px;border-radius:4px;font-weight:600;flex-shrink:0}
+.dup-note__tag--old{background:#F1F5F9;color:#475569}
+.dup-note__tag--new{background:#EFF6FF;color:#2563EB}
+.dup-note__tip{margin-top:10px;font-size:12px;color:var(--text-mute);line-height:1.7}
+.mapping-list-scroll{max-height:55vh;overflow-y:auto;overflow-x:hidden;padding:4px 2px 4px;margin:8px 0 12px;border:1px solid var(--border);border-radius:var(--r-md);background:var(--surface)}
+.mapping-list-scroll .mapping-item{margin:6px 8px}
+.modal-overlay--top{z-index:10000}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes popIn{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
 </style>
 </head>
 <body>
@@ -262,9 +282,27 @@ var INCOME_CAT_KEYWORDS={
   '转账':['转账','收款','收到','进账','到账','打入','打来','转来','转帐','汇款','收款到账','转入','代收'],
   '其他收入':[],
 };
-var SPEECH_FIXES=[['快钱','块钱'],['事十','四十'],['事八','十八'],['事二','十二'],['事五','十五'],['事三','十三'],['事六','十六'],['事七','十七'],['事九','十九'],['事四','十四'],['白','百'],['签','千'],['碗','万'],['留','六'],['武','五'],['量','两'],['气','七'],['吧块','八块'],['吧元','八元'],['思','四'],['是十','四十'],['是二','十二'],['是三','十三'],['是五','十五'],['是六','十六'],['是七','十七'],['是八','十八'],['是九','十九'],['酒块','九块'],['酒元','九元'],['另','零'],['灵','零'],['山','三'],['散','三'],['路','六'],['已','一'],['以','一'],['快','块'],['原','元'],['员','元'],['圆','元'],['是','十']];
+var SPEECH_FIXES=[['快钱','块钱'],['事十','四十'],['事八','十八'],['事二','十二'],['事五','十五'],['事三','十三'],['事六','十六'],['事七','十七'],['事九','十九'],['事四','十四'],['吧块','八块'],['吧元','八元'],['是十','四十'],['是二','十二'],['是三','十三'],['是五','十五'],['是六','十六'],['是七','十七'],['是八','十八'],['是九','十九'],['酒块','九块'],['酒元','九元']];
+var SPEECH_CHAR_CTX=[['白','百'],['签','千'],['碗','万'],['留','六'],['武','五'],['量','两'],['气','七'],['思','四'],['另','零'],['灵','零'],['山','三'],['散','三'],['路','六'],['已','一'],['以','一'],['快','块'],['原','元'],['员','元'],['圆','元'],['是','十']];
 var PHRASE_FIXES=[['女盆友','女朋友'],['男盆友','男朋友'],['大车','打车'],['做范','做饭'],['叫美图','叫美团'],['饿了吗','饿了么'],['新巴克','星巴克'],['瑞信','瑞幸'],['蜜雪冰橙','蜜雪冰城'],['煎饼果籽','煎饼果子'],['肉夹磨','肉夹馍'],['螺丝粉','螺蛳粉'],['酸辣份','酸辣粉'],['海底捞鱼','海底捞'],['肯德机','肯德基'],['麦当老','麦当劳'],['汗堡','汉堡'],['披撒','披萨'],['三明志','三明治'],['优你库','优衣库'],['花肺','花费'],['之付','支付'],['消费卷','消费券'],['打字','打车']];
-function fixSpeechErrors(text){var r=text;for(var i=0;i<PHRASE_FIXES.length;i++)r=r.replace(new RegExp(PHRASE_FIXES[i][0],'g'),PHRASE_FIXES[i][1]);for(var i=0;i<SPEECH_FIXES.length;i++)r=r.replace(new RegExp(SPEECH_FIXES[i][0],'g'),SPEECH_FIXES[i][1]);return r}
+function fixSpeechErrors(text){
+  var r=text;
+  for(var i=0;i<PHRASE_FIXES.length;i++)r=r.replace(new RegExp(PHRASE_FIXES[i][0],'g'),PHRASE_FIXES[i][1]);
+  for(var i=0;i<SPEECH_FIXES.length;i++)r=r.replace(new RegExp(SPEECH_FIXES[i][0],'g'),SPEECH_FIXES[i][1]);
+  var UNIT_CTX=/[块元毛角分钱￥¥RMB]/;
+  for(var i=0;i<SPEECH_CHAR_CTX.length;i++){
+    var from=SPEECH_CHAR_CTX[i][0],to=SPEECH_CHAR_CTX[i][1];
+    r=r.split(from).map(function(seg,idx,arr){
+      if(idx===arr.length-1)return seg;
+      var prevCh=seg.length?seg.charAt(seg.length-1):'';
+      var nextSeg=arr[idx+1];
+      var nextCh=nextSeg.length?nextSeg.charAt(0):'';
+      if(UNIT_CTX.test(prevCh)||UNIT_CTX.test(nextCh))return seg+to;
+      return seg+from;
+    }).join('');
+  }
+  return r
+}
 var FILLER_RE=/那个|这个|嗯|啊|呢|嘛|就是|对吧|好的|额|呃|说一下|记一下|记账|哦|呀|哎|噢|唔|诶|的话|就是说/g;
 function removeFillers(text){return text.replace(FILLER_RE,'').trim()}
 var CN_NUM={'零':0,'一':1,'二':2,'两':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9,'十':10,'百':100,'千':1000,'万':10000};
@@ -351,9 +389,16 @@ function extractAmount(text){
   if(m){var d2=parseCnNum(m[1]);if(d2!==null)return d2/10}
   // Step 4: 扫描全部中文数字串（“三十五”=35，“二万”=20000）
   // 跳过品牌名单字 百/千/万（百果园、万宝龙），继续找后面的真正金额
+  // 对单字"十/百/千"也做真实词保护：若前后非金额上下文（如"十分钟""百货店"），则跳过，避免误提取为金额
   var re3=/[零一二三四五六七八九十百千万两]+/g,m3;
+  var AMT_NEAR=/[块元毛角分亿万千百￥¥RMB\d零一二三四五六七八九两]/;
   while((m3=re3.exec(text))!==null){
     if(m3[0].length===1&&(m3[0]==='百'||m3[0]==='千'||m3[0]==='万'))continue;
+    if(m3[0].length===1&&(m3[0]==='十')){
+      var pre=m3.index>0?text.charAt(m3.index-1):'';
+      var nxt=m3.index+m3[0].length<text.length?text.charAt(m3.index+m3[0].length):'';
+      if(!AMT_NEAR.test(pre)&&!AMT_NEAR.test(nxt))continue;
+    }
     var n3=parseCnNum(m3[0]);if(n3&&n3>0)return n3
   }
   // Step 5: Arabic number (e.g., "20" or "9.9")
@@ -364,41 +409,47 @@ var LOVE_STRONG=['爱情','恋人','对象','约会','恋爱','情侣','女友',
 function detectCategory(text,type){var cats=type==='income'?INCOME_CATEGORIES:CATEGORIES,map=type==='income'?INCOME_CAT_KEYWORDS:CAT_KEYWORDS,fallback=type==='income'?'其他收入':'其他';var custom=getCustomMappings().filter(function(m){return m.type===type});var bestMatch=null,bestMatchLen=0;for(var ci0=0;ci0<custom.length;ci0++){if(text.indexOf(custom[ci0].keyword)!==-1&&custom[ci0].keyword.length>bestMatchLen){bestMatch=custom[ci0].category;bestMatchLen=custom[ci0].keyword.length}}if(bestMatch)return bestMatch;if(type==='expense'){for(var li=0;li<LOVE_STRONG.length;li++){if(text.indexOf(LOVE_STRONG[li])!==-1)return '爱情'}}var best=fallback,bestScore=0;for(var ci=0;ci<cats.length;ci++){var name=cats[ci];if(name!==fallback&&text.indexOf(name)!==-1){var ns=name.length+1000;if(ns>bestScore){bestScore=ns;best=name}}}for(var cat in map){var kws=map[cat],score=0;for(var i=0;i<kws.length;i++){if(text.indexOf(kws[i])!==-1){var w=kws[i].length===1?1:kws[i].length+2;score+=w}}if(score>bestScore){bestScore=score;best=cat}}return best}
 function detectType(text){for(var i=0;i<INCOME_KEYWORDS.length;i++)if(text.indexOf(INCOME_KEYWORDS[i])!==-1)return 'income';return 'expense'}
 function cleanNote(text,type){
-  var SAFE_SUFFIX=/[钟享析数别裂离类配手子组店割区歧心量期批布工层个种项次回遍下场节章页条句步级件分]/;
+  var SAFE_REAL_SUFFIX=/[钟享析数别裂离类配手子组店割区歧心量期批布工层个种项次回遍下场节章页条句步级件]/;
   var SAFE_PREFIX=/第|分/;
   var isSafeCNNum=function(src,idx,len){
     if(idx>0&&SAFE_PREFIX.test(src.charAt(idx-1)))return true;
     var after=idx+len;
-    if(after<src.length&&SAFE_SUFFIX.test(src.charAt(after)))return true;
+    if(after>=src.length)return false;
+    var ch=src.charAt(after);
+    if(SAFE_REAL_SUFFIX.test(ch))return true;
+    // "分"字再细分：只有当"分"之后还紧跟着真实词字符（钟享析…）时才是真实词后缀；否则是货币单位"分"→数字该删
+    if(ch==='分'){
+      var nn=after+1<src.length?src.charAt(after+1):'';
+      if(nn&&SAFE_REAL_SUFFIX.test(nn))return true;
+      var pp=idx>0?src.charAt(idx-1):'';
+      if(pp==='部')return true;
+    }
     return false;
   };
   var amtStripped=text
-    // ① 阿拉伯数字+中文量级（40万、3千、1.5万）整体删除
     .replace(/\d+(?:\.\d+)?\s*(亿|万|千|百)/g,'')
-    // ② 中文数字串：能独立构成正数才删除；
-    //    单独"百/千/万"（品牌如万宝龙）保留；
-    //    前后紧邻真实词汇结构（第X、分钟、分享、分期、一个、X层、X次…）的数字跳过不删，避免误伤"十分钟""一个优惠""分期付款"
     .replace(/[零一二三四五六七八九十百千万两]+/g,function(m,idx,src){
       if(m.length===1&&(m==='百'||m==='千'||m==='万'))return m;
       if(parseCnNum(m)<=0)return m;
       if(isSafeCNNum(src,idx,m.length))return m;
       return '';
     })
-    // ③ 纯阿拉伯数字：与字母相邻保留（E300/X5/iPhone15）；与安全后缀相邻保留（3分钟、5层），否则删除
     .replace(/([A-Za-z])?\d+(?:\.\d+)?([A-Za-z])?/g,function(m,before,after,idx,src){
       if(before||after)return m;
       var end=idx+m.length;
-      if(end<src.length&&SAFE_SUFFIX.test(src.charAt(end)))return m;
+      if(end<src.length){
+        var c2=src.charAt(end);
+        if(SAFE_REAL_SUFFIX.test(c2))return m;
+        if(c2==='分'&&end+1<src.length&&SAFE_REAL_SUFFIX.test(src.charAt(end+1)))return m;
+      }
       return '';
     })
-    // ④ 单位残数 + 货币"分/分钱"清洗
-    //    负向环视: (?<!部) 避开"部分"; 负向后续 避开"分钟/分享/分析/分数/分别/分期/分批"等真实词
     .replace(/(?:块|元)\s*(?:\d+(?:\.\d+)?|[零一二三四五六七八九两])|(?:毛|角|分)\s*(?:\d+|[零一二三四五六七八九两])|分钱|(?<!部)分(?![钟享析数别裂离类配手子组店割区歧心量期批布工])/g,'');
   var unitReg=/块|元|块钱|元钱|毛|角|半|RMB|￥|¥/g;
   if(type==='income'){
     return amtStripped.replace(/收到|进账|到账|打入|打来|转来|转账|收款|汇款|转入|代收|又有|并且|以及|还有|然后|另外|再来|接着|加上|再有|同时|此外|而且/g,'').replace(unitReg,'').replace(/\s+/g,'').trim()
   }
-  return amtStripped.replace(/首付|花了|花费|支出|付了|付款|支付|付|给|买了|买|花掉|用了|消费|充值|缴费|缴款|充|收|收到|进账|到账|之付|又有|并且|以及|还有|然后|另外|再来|接着|加上|再有|同时|此外|而且/g,'').replace(unitReg,'').replace(/\s+/g,'').trim()
+  return amtStripped.replace(/首付|花了|花费|支出|付了|付款|支付|付|给|买了|买|花掉|用了|消费|充值|缴费|缴款|充|收|收到|进账|到账|交了|交|之付|又有|并且|以及|还有|然后|另外|再来|接着|加上|再有|同时|此外|而且/g,'').replace(unitReg,'').replace(/\s+/g,'').trim()
 }
 // 按金额边界分段：一句连记多笔、中间无标点时，在上一笔金额结束处切开
 function splitByAmounts(text){
@@ -459,16 +510,139 @@ function exportBackup(){
 }
 function openConfigModal(){state.configModal=true;state.importStatus=null;render()}
 function closeConfigModal(){state.configModal=false;state.importStatus=null;render()}
-function openMappingModal(){state.mappingModal=true;state.mappingForm={type:'expense',keyword:'',category:'餐饮'};render()}
-function closeMappingModal(){state.mappingModal=false;render()}
+function buildMappingModalHTML(){
+  var mapCount=getCustomMappings().length;
+  var mapEntryHTML='<div class="mapping-entry-row"><div class="mapping-entry-row__left"><span class="mapping-entry-row__title">添加记录</span><span class="mapping-entry-row__count">共 '+mapCount+' 条</span></div><button class="mapping-entry-row__btn" onclick="openMappingListModal()">查看</button></div>';
+  var mapCatList=state.mappingForm.type==='income'?INCOME_CATEGORIES:CATEGORIES;
+  var mapCatOpts='';
+  for(var mci=0;mci<mapCatList.length;mci++)mapCatOpts+='<option value="'+mapCatList[mci]+'"'+(state.mappingForm.category===mapCatList[mci]?' selected':'')+'>'+mapCatList[mci]+'</option>';
+  var mapGuide='<div class="hint-box">'+icon('sparkles',16)+' 输入一个关键词（如：圣罗兰、手办、剧本杀），选择对应分类。<br>保存后，下次输入包含该关键词的内容时，自动归入所选分类。<br>自定义映射优先于系统默认识别。</div>';
+  return '<div id="__mapping_modal__" class="modal-overlay" style="z-index:9000" onclick="if(event.target===this)closeMappingModal()"><div class="modal"><div class="modal__title">自定义映射</div>'+mapEntryHTML+'<div class="field"><label class="field__label">类型</label><div class="type-toggle"><button id="__map_btn_exp__" class="type-toggle__btn '+(state.mappingForm.type==='expense'?'type-toggle__btn--active':'')+'" onclick="__mappingSetType__(\'expense\')">支出</button><button id="__map_btn_inc__" class="type-toggle__btn '+(state.mappingForm.type==='income'?'type-toggle__btn--active':'')+'" onclick="__mappingSetType__(\'income\')">收入</button></div></div><div class="field"><label class="field__label">关键词</label><input id="__map_kw_input__" class="field__input" type="text" placeholder="输入关键词，如：圣罗兰" value="'+state.mappingForm.keyword+'" oninput="state.mappingForm.keyword=this.value"></div><div class="field"><label class="field__label">映射分类</label><select id="__map_cat_select__" class="field__select" onchange="state.mappingForm.category=this.value">'+mapCatOpts+'</select></div><div class="btn-row"><button class="btn btn--outline" onclick="closeMappingModal()">取消</button><button class="btn btn--primary" onclick="saveMapping()">添加映射</button></div>'+mapGuide+'</div></div>';
+}
+// 类型切换：本地更新激活态与分类下拉，不触发整体 render，避免闪烁
+function __mappingSetType__(type){
+  state.mappingForm.type=type;
+  state.mappingForm.category=type==='income'?'工资':'餐饮';
+  var be=document.getElementById('__map_btn_exp__'),bi=document.getElementById('__map_btn_inc__');
+  if(be)be.className='type-toggle__btn '+(type==='expense'?'type-toggle__btn--active':'');
+  if(bi)bi.className='type-toggle__btn '+(type==='income'?'type-toggle__btn--active':'');
+  var sel=document.getElementById('__map_cat_select__');
+  if(sel){
+    var list=type==='income'?INCOME_CATEGORIES:CATEGORIES,opts='';
+    for(var i=0;i<list.length;i++)opts+='<option value="'+list[i]+'">'+list[i]+'</option>';
+    sel.innerHTML=opts;
+    sel.value=state.mappingForm.category;
+  }
+}
+function openMappingModal(){
+  state.mappingForm={type:'expense',keyword:'',category:'餐饮'};
+  state.mappingModal=true;
+  var old=document.getElementById('__mapping_modal__');if(old&&old.parentNode)old.parentNode.removeChild(old);
+  var tmp=document.createElement('div');tmp.innerHTML=buildMappingModalHTML();document.body.appendChild(tmp.firstElementChild);
+  // 不调用 render() → 打开/关闭添加面板全程零闪烁
+}
+function closeMappingModal(){
+  state.mappingModal=false;state.mappingListModal=false;
+  var el=document.getElementById('__mapping_modal__');if(el&&el.parentNode)el.parentNode.removeChild(el);
+  __detachMappingList__();
+  __detachDupMappingModal__();
+}
+function buildMappingListBodyHTML(mlist){
+  if(!mlist.length)return '<div class="mapping-empty">暂无自定义映射</div>';
+  var bodyHTML='<div class="mapping-list-scroll">';
+  for(var mj=0;mj<mlist.length;mj++){var mp=mlist[mj],meta=getCatMeta(mp.category,mp.type),tcls=mp.type==='income'?'mapping-item__type--income':'mapping-item__type--expense',tlbl=mp.type==='income'?'收入':'支出';
+    bodyHTML+='<div class="mapping-item"><div class="mapping-item__left">'+icon(meta.icon,18)+' <span class="mapping-item__kw">'+mp.keyword+'</span> <span class="mapping-item__arrow">→</span> <span class="mapping-item__cat">'+mp.category+'</span> <span class="mapping-item__type '+tcls+'">'+tlbl+'</span></div><button class="tx-delete" onclick="deleteMapping('+mp.id+')">删除</button></div>';
+  }
+  bodyHTML+='</div>';
+  return bodyHTML;
+}
+function buildMappingListCardHTML(mlist){
+  return '<div class="modal__title">我的映射记录 <span style="font-size:13px;color:var(--text-mute);font-weight:400;margin-left:6px">共 '+mlist.length+' 条</span></div>'+buildMappingListBodyHTML(mlist)+'<div class="btn-row"><button class="btn btn--primary" style="flex:1" onclick="closeMappingListModal()">完成</button></div>';
+}
+function buildMappingListHTML(){
+  var mlist=getCustomMappings();
+  return '<div id="__mapping_list_modal__" class="mapping-list-container" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;background:rgba(15,15,15,.45);backdrop-filter:blur(2px);animation:fadeIn .12s ease-out" onclick="if(event.target===this)closeMappingListModal()"><div id="__mapping_list_card__" class="modal" style="max-width:520px;width:100%;max-height:90vh;display:flex;flex-direction:column;animation:popIn .16s ease-out">'+buildMappingListCardHTML(mlist)+'</div></div>';
+}
+function __detachMappingList__(){
+  var el=document.getElementById('__mapping_list_modal__');
+  if(el&&el.parentNode)el.parentNode.removeChild(el);
+}
+function refreshMappingListModal(){
+  if(!state.mappingListModal)return;
+  var card=document.getElementById('__mapping_list_card__');
+  if(!card){openMappingListModal();return}
+  // 只替换卡片内部内容，保留容器与卡片节点本身 → 入场动画(fadeIn/popIn)不重播，删除时不会整页闪烁
+  card.innerHTML=buildMappingListCardHTML(getCustomMappings());
+  // 同步更新底层添加面板顶部的「共 N 条」计数
+  var cnt=document.querySelector('.mapping-entry-row__count');
+  if(cnt)cnt.textContent='共 '+getCustomMappings().length+' 条';
+}
+function openMappingListModal(){
+  state.mappingListModal=true;
+  __detachMappingList__();
+  var tmp=document.createElement('div');
+  tmp.innerHTML=buildMappingListHTML();
+  document.body.appendChild(tmp.firstElementChild);
+  // 不调用 render() → 下方添加映射面板保持原样，零闪烁
+}
+function closeMappingListModal(){
+  state.mappingListModal=false;
+  __detachMappingList__();
+  // 不调用 render() → 零闪烁
+}
+// 局部刷新：只更新计数 chip 与（若开着）列表弹窗，不触发整体 render，避免添加面板闪烁
+function __refreshMappingUI__(){
+  var cnt=document.querySelector('.mapping-entry-row__count');
+  if(cnt)cnt.textContent='共 '+getCustomMappings().length+' 条';
+  if(state.mappingListModal)refreshMappingListModal();
+}
+function __clearMappingInput__(){
+  state.mappingForm.keyword='';
+  var inp=document.getElementById('__map_kw_input__');
+  if(inp)inp.value='';
+}
+// 重复筛查：按关键词（忽略大小写/首尾空格）判断是否已存在相同映射
+function findDuplicateMapping(kw){
+  var n=String(kw||'').trim().toLowerCase(),list=getCustomMappings();
+  for(var i=0;i<list.length;i++){if(String(list[i].keyword||'').trim().toLowerCase()===n)return list[i]}
+  return null;
+}
 function saveMapping(){
   var kw=(state.mappingForm.keyword||'').trim();
   if(!kw){showToast('请输入关键词');return}
+  var dup=findDuplicateMapping(kw);
+  if(dup){__showDupMappingModal__(dup);return}   // 命中重复 → 弹出替换/保留弹窗（DOM 注入，不闪）
   saveCustomMapping({keyword:kw,category:state.mappingForm.category,type:state.mappingForm.type});
-  state.mappingForm.keyword='';
-  showToast('映射已保存')
+  __clearMappingInput__();
+  __refreshMappingUI__();
+  showToast('映射已保存');
 }
-function deleteMapping(id){deleteCustomMapping(id);showToast('已删除映射')}
+function deleteMapping(id){deleteCustomMapping(id);showToast('已删除映射');__refreshMappingUI__();}
+function __detachDupMappingModal__(){var el=document.getElementById('__dup_mapping_modal__');if(el&&el.parentNode)el.parentNode.removeChild(el);}
+function __hideDupMappingModal__(){__detachDupMappingModal__();}
+function __showDupMappingModal__(dup){
+  __detachDupMappingModal__();
+  var kw=String(dup.keyword||'');
+  var oldMeta=getCatMeta(dup.category,dup.type),newMeta=getCatMeta(state.mappingForm.category,state.mappingForm.type);
+  var oldType=dup.type==='income'?'收入':'支出',newType=state.mappingForm.type==='income'?'收入':'支出';
+  var html='<div id="__dup_mapping_modal__" class="modal-overlay" style="z-index:10001" onclick="if(event.target===this)__hideDupMappingModal__()"><div class="modal"><div class="modal__title">映射已重复</div><div class="dup-note"><div class="dup-note__title">关键词「'+kw+'」的映射已存在</div><div class="dup-note__row"><span class="dup-note__tag dup-note__tag--old">原有</span>'+icon(oldMeta.icon,16)+' '+kw+' → '+dup.category+' · '+oldType+'</div><div class="dup-note__row"><span class="dup-note__tag dup-note__tag--new">新设</span>'+icon(newMeta.icon,16)+' '+kw+' → '+state.mappingForm.category+' · '+newType+'</div><div class="dup-note__tip">选择「替换」将用新设置覆盖原有映射；选择「保留」则维持原有映射不变。</div></div><div class="btn-row"><button class="btn btn--outline" style="flex:1" onclick="__hideDupMappingModal__()">保留</button><button class="btn btn--primary" style="flex:1" onclick="__resolveDupMapping__(true)">替换</button></div></div></div>';
+  var tmp=document.createElement('div');tmp.innerHTML=html;document.body.appendChild(tmp.firstElementChild);
+}
+// doReplace=true → 用新设置覆盖原有映射（id 不变）；false → 保留原映射
+function __resolveDupMapping__(doReplace){
+  var kw=(state.mappingForm.keyword||'').trim();
+  if(doReplace){
+    var list=getCustomMappings(),n=kw.toLowerCase();
+    for(var i=0;i<list.length;i++){if(String(list[i].keyword||'').trim().toLowerCase()===n){list[i].category=state.mappingForm.category;list[i].type=state.mappingForm.type}}
+    localStorage.setItem('aiBillMappings',JSON.stringify(list));
+    showToast('已替换映射');
+  }else{
+    showToast('已保留原映射');
+  }
+  __clearMappingInput__();
+  __hideDupMappingModal__();
+  __refreshMappingUI__();
+}
 // 选择备份文件后读取、校验并合并恢复（按 id 去重，不会覆盖或重复，保证连续性）
 function importBackup(file){
   if(!file)return;
@@ -516,7 +690,7 @@ function saveCustomMapping(item){var list=getCustomMappings();list.push({keyword
 function deleteCustomMapping(id){var list=getCustomMappings().filter(function(m){return m.id!==id});localStorage.setItem('aiBillMappings',JSON.stringify(list));return list}
 
 // ========== App State ==========
-var state={tab:'record',txs:[],isRecording:false,voiceModal:false,entryMode:'auto',transcript:'',parsedRecords:[],manualModal:false,configModal:false,importStatus:null,selectedMonth:new Date().toISOString().slice(0,7),statDim:'month',statPeriod:new Date().toISOString().slice(0,7),toast:'',form:{type:'expense',amount:'',category:'餐饮',note:''},voiceStatus:'',voiceStatusType:'',mappingModal:false,mappingForm:{type:'expense',keyword:'',category:'餐饮'}};
+var state={tab:'record',txs:[],isRecording:false,voiceModal:false,entryMode:'auto',transcript:'',parsedRecords:[],manualModal:false,configModal:false,importStatus:null,selectedMonth:new Date().toISOString().slice(0,7),statDim:'month',statPeriod:new Date().toISOString().slice(0,7),toast:'',form:{type:'expense',amount:'',category:'餐饮',note:''},voiceStatus:'',voiceStatusType:'',mappingModal:false,mappingListModal:false,mappingForm:{type:'expense',keyword:'',category:'餐饮'}};
 
 // ========== Voice Engine v4 ==========
 var recognition=null,wantRecording=false,finalTranscript='',restartTimer=null,noResultTimer=null;
@@ -773,6 +947,7 @@ function confirmParsed(){
     state.txs=JSON.parse(localStorage.getItem('aiBillTxs')||'[]');
     stopVoice();
     state.voiceModal=false;
+    render();   // 关闭语音弹窗并刷新列表（showToast 已不再触发 render）
     showToast('成功记录 '+state.parsedRecords.length+' 笔账目');
   });
 }
@@ -803,7 +978,15 @@ function switchStatDim(dim){
 function $(sel){return document.querySelector(sel)}
 function todayStr(){var d=new Date(),wk=['日','一','二','三','四','五','六'];return d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日 星期'+wk[d.getDay()]}
 function monthLabel(ym){var p=ym.split('-');return p[0]+'年'+parseInt(p[1])+'月'}
-function showToast(msg){state.toast=msg;render();setTimeout(function(){state.toast='';var el=document.querySelector('.toast');if(el)el.remove();else render()},2000)}
+function showToast(msg){
+  // 直接以 DOM 注入方式显示提示，不触发整体 render，避免打断已打开的弹层（防闪烁）
+  var old=document.querySelector('.toast');
+  if(old&&old.parentNode)old.parentNode.removeChild(old);
+  var el=document.createElement('div');el.className='toast';el.textContent=msg;
+  document.body.appendChild(el);
+  if(showToast._timer)clearTimeout(showToast._timer);
+  showToast._timer=setTimeout(function(){var e=document.querySelector('.toast');if(e&&e.parentNode)e.parentNode.removeChild(e)},2000);
+}
 
 function getMonthExpense(){var ym=new Date().toISOString().slice(0,7),s=0;for(var i=0;i<state.txs.length;i++)if(state.txs[i].type==='expense'&&state.txs[i].date.startsWith(ym))s+=state.txs[i].amount;return s}
 function getMonthIncome(){var ym=new Date().toISOString().slice(0,7),s=0;for(var i=0;i<state.txs.length;i++)if(state.txs[i].type==='income'&&state.txs[i].date.startsWith(ym))s+=state.txs[i].amount;return s}
@@ -966,28 +1149,9 @@ function render(){
       +'3. 恢复为<b>合并方式</b>：不覆盖本机已有记录、不重复，可多次导入。</div>';
     html+='<div class="modal-overlay" onclick="if(event.target===this)closeConfigModal()"><div class="modal"><div class="modal__title">配置</div>'+guide+fileField+statusHTML+'<div class="btn-row"><button class="btn btn--primary" style="flex:1" onclick="closeConfigModal()">完成</button></div></div></div>';
   }
-  // Mapping modal（自定义映射）
-  if(state.mappingModal){
-    var mappings=getCustomMappings();
-    var mapListHTML='';
-    if(mappings.length){
-      mapListHTML='<div class="mapping-list">';
-      for(var mi=0;mi<mappings.length;mi++){var mp=mappings[mi],mpMeta=getCatMeta(mp.category,mp.type),mpTypeCls=mp.type==='income'?'mapping-item__type--income':'mapping-item__type--expense',mpTypeLabel=mp.type==='income'?'收入':'支出';
-        mapListHTML+='<div class="mapping-item"><div class="mapping-item__left">'+icon(mpMeta.icon,18)+' <span class="mapping-item__kw">'+mp.keyword+'</span> <span class="mapping-item__arrow">→</span> <span class="mapping-item__cat">'+mp.category+'</span> <span class="mapping-item__type '+mpTypeCls+'">'+mpTypeLabel+'</span></div><button class="tx-delete" onclick="deleteMapping('+mp.id+')">删除</button></div>';
-      }
-      mapListHTML+='</div>';
-    }else{
-      mapListHTML='<div class="mapping-empty">暂无自定义映射，请在下方添加</div>';
-    }
-    var mapCatList=state.mappingForm.type==='income'?INCOME_CATEGORIES:CATEGORIES;
-    var mapCatOpts='';
-    for(var mci=0;mci<mapCatList.length;mci++)mapCatOpts+='<option value="'+mapCatList[mci]+'"'+(state.mappingForm.category===mapCatList[mci]?' selected':'')+'>'+mapCatList[mci]+'</option>';
-    var mapExpBtn="state.mappingForm.type='expense';state.mappingForm.category='餐饮';render()";
-    var mapIncBtn="state.mappingForm.type='income';state.mappingForm.category='工资';render()";
-    var mapGuide='<div class="hint-box">'+icon('sparkles',16)+' 输入一个关键词（如：圣罗兰、手办、剧本杀），选择对应分类。<br>保存后，下次输入包含该关键词的内容时，自动归入所选分类。<br>自定义映射优先于系统默认识别。</div>';
-    html+='<div class="modal-overlay" onclick="if(event.target===this)closeMappingModal()"><div class="modal"><div class="modal__title">自定义映射</div>'+mapListHTML+'<div class="field"><label class="field__label">类型</label><div class="type-toggle"><button class="type-toggle__btn '+(state.mappingForm.type==='expense'?'type-toggle__btn--active':'')+'" onclick="'+mapExpBtn+'">支出</button><button class="type-toggle__btn '+(state.mappingForm.type==='income'?'type-toggle__btn--active':'')+'" onclick="'+mapIncBtn+'">收入</button></div></div><div class="field"><label class="field__label">关键词</label><input class="field__input" type="text" placeholder="输入关键词，如：圣罗兰" value="'+state.mappingForm.keyword+'" oninput="state.mappingForm.keyword=this.value"></div><div class="field"><label class="field__label">映射分类</label><select class="field__select" onchange="state.mappingForm.category=this.value">'+mapCatOpts+'</select></div><div class="btn-row"><button class="btn btn--outline" onclick="closeMappingModal()">取消</button><button class="btn btn--primary" onclick="saveMapping()">添加映射</button></div>'+mapGuide+'</div></div>';
-  }
-  if(state.toast)html+='<div class="toast">'+state.toast+'</div>';
+  // Mapping modal（自定义映射）：已改为 DOM 注入（openMappingModal），不再随整体 render 重建，避免闪烁
+
+  // toast 由 showToast 直接以 DOM 注入显示，不参与整体 render（防闪烁）
   app.innerHTML=html;
 }
 
@@ -1010,7 +1174,8 @@ window.startVoice=startVoice;window.stopVoice=stopVoice;
 window.confirmParsed=confirmParsed;window.openManualModal=openManualModal;window.closeManualModal=closeManualModal;
 window.saveManual=saveManual;window.deleteTx=deleteTx;window.textInputChange=textInputChange;
 window.exportBackup=exportBackup;window.openConfigModal=openConfigModal;window.closeConfigModal=closeConfigModal;window.importBackup=importBackup;
-window.openMappingModal=openMappingModal;window.closeMappingModal=closeMappingModal;window.saveMapping=saveMapping;window.deleteMapping=deleteMapping;
+window.openMappingModal=openMappingModal;window.closeMappingModal=closeMappingModal;window.openMappingListModal=openMappingListModal;window.closeMappingListModal=closeMappingListModal;window.saveMapping=saveMapping;window.deleteMapping=deleteMapping;
+window.__mappingSetType__=__mappingSetType__;window.__hideDupMappingModal__=__hideDupMappingModal__;window.__resolveDupMapping__=__resolveDupMapping__;
 document.addEventListener('DOMContentLoaded',init);
 </script>
 </body>
