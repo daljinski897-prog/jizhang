@@ -1014,7 +1014,6 @@ function showToast(msg){
 
 function getMonthExpense(ym){ym=ym||new Date().toISOString().slice(0,7);var s=0;for(var i=0;i<state.txs.length;i++)if(state.txs[i].type==='expense'&&state.txs[i].date.startsWith(ym))s+=state.txs[i].amount;return s}
 function getMonthIncome(ym){ym=ym||new Date().toISOString().slice(0,7);var s=0;for(var i=0;i<state.txs.length;i++)if(state.txs[i].type==='income'&&state.txs[i].date.startsWith(ym))s+=state.txs[i].amount;return s}
-function getMonthCount(ym){ym=ym||new Date().toISOString().slice(0,7);var c=0;for(var i=0;i<state.txs.length;i++)if(state.txs[i].date.startsWith(ym))c++;return c}
 // 按年月筛选后的分组（记账页只展示选中月份，不再全量累计）
 function getGroupedTxs(ym){var g={};for(var i=0;i<state.txs.length;i++){var t=state.txs[i];if(ym&&t.date.slice(0,7)!==ym)continue;if(!g[t.date])g[t.date]={date:t.date,items:[],expense:0,income:0};g[t.date].items.push(t);if(t.type==='expense')g[t.date].expense+=t.amount;else if(t.type==='income')g[t.date].income+=t.amount}return Object.keys(g).sort(function(a,b){return b.localeCompare(a)}).map(function(k){var o=g[k],p=o.date.split('-'),wk=['日','一','二','三','四','五','六'];o.dateStr=parseInt(p[1])+'月'+parseInt(p[2])+'日 星期'+wk[new Date(o.date).getDay()];return o})}
 // 记账页：年份列表（有数据的年份 ∪ 当前年）
@@ -1183,9 +1182,9 @@ function render(){
     state.recordPeriod=ym;
     var curYm=new Date().toISOString().slice(0,7);
     var mLbl=(ym===curYm)?'本月':(parseInt(ym.slice(5,7),10)+'月');
-    var exp=getMonthExpense(ym),inc=getMonthIncome(ym),cnt=getMonthCount(ym);
+    var exp=getMonthExpense(ym),inc=getMonthIncome(ym),bal=Math.round((inc-exp)*100)/100;
     html+='<div class="page-record">'+topBarHTML;
-    html+='<div class="summary-card reveal"><div class="summary-item"><div class="summary-item__num summary-item__num--expense">¥'+exp.toFixed(2)+'</div><div class="summary-item__label">'+mLbl+'支出</div></div><div class="summary-item"><div class="summary-item__num summary-item__num--neutral">'+cnt+'</div><div class="summary-item__label">'+mLbl+'笔数</div></div><div class="summary-item"><div class="summary-item__num summary-item__num--income">¥'+inc.toFixed(2)+'</div><div class="summary-item__label">'+mLbl+'收入</div></div></div>';
+    html+='<div class="summary-card reveal"><div class="summary-item"><div class="summary-item__num summary-item__num--expense">¥'+exp.toFixed(2)+'</div><div class="summary-item__label">'+mLbl+'支出</div></div><div class="summary-item"><div class="summary-item__num '+(bal>=0?'summary-item__num--income':'summary-item__num--expense')+'">¥'+bal.toFixed(2)+'</div><div class="summary-item__label">'+mLbl+'结余</div></div><div class="summary-item"><div class="summary-item__num summary-item__num--income">¥'+inc.toFixed(2)+'</div><div class="summary-item__label">'+mLbl+'收入</div></div></div>';
     html+='<div class="record-entry" style="padding:12px 16px 4px;display:flex;gap:10px"><button class="btn btn--primary voice-big-btn" style="flex:1" onclick="openVoiceModal(\'expense\')">'+icon('plus',20)+' 支出</button><button class="btn voice-big-btn" style="flex:1;background:var(--success);color:#fff;box-shadow:0 2px 8px rgba(22,163,74,.3)" onclick="openVoiceModal(\'income\')">'+icon('arrow-down-left',20)+' 收入</button></div>';
     var groups=getGroupedTxs(ym);
     html+='<div class="tx-scroll"><div class="tx-list">';
