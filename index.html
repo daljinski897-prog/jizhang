@@ -3,29 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#0D9488">
+<meta name="theme-color" content="#FFFFFF">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>记账小管家</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><circle cx='12' cy='12' r='10' fill='%230D9488'/></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><circle cx='12' cy='12' r='10' fill='%23111214'/></svg>">
 <style>
-:root{--primary:#0D9488;--primary-hover:#0F766E;--primary-light:#CCFBF1;--bg:#FAFAF7;--surface:#FFFFFF;--border:#E7E5E0;--text:#1C1917;--text-sub:#78716C;--text-mute:#A8A29E;--success:#16A34A;--danger:#DC2626;--r-sm:6px;--r-md:10px;--r-lg:16px;--shadow-sm:0 1px 3px rgba(0,0,0,.06);--max-w:480px;--nav-h:56px;--font:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;--mono:"SF Mono","JetBrains Mono",monospace}
+:root{--primary:#111214;--primary-hover:#000000;--primary-light:#F1F2F4;--bg:#F2F3F5;--surface:#FFFFFF;--border:#E9EAEC;--text:#0F1012;--text-sub:#6B7280;--text-mute:#9CA3AF;--success:#16A34A;--danger:#DC2626;--r-sm:8px;--r-md:14px;--r-lg:22px;--shadow-sm:0 1px 2px rgba(17,18,20,.04),0 8px 20px rgba(17,18,20,.05);--shadow-lg:0 14px 36px rgba(17,18,20,.14);--max-w:480px;--nav-h:66px;--font:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;--mono:"SF Mono","JetBrains Mono",monospace}
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{-webkit-text-size-adjust:100%}
 body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;max-width:var(--max-w);margin:0 auto;min-height:100vh;font-size:14px;overscroll-behavior:none}
 button{font-family:inherit;cursor:pointer;border:none;background:none}
 input,select,textarea{font-family:inherit;font-size:inherit}
 svg{display:block}
-.app{background:radial-gradient(ellipse at 20% -5%,rgba(13,148,136,.05) 0%,transparent 55%),radial-gradient(ellipse at 85% 8%,rgba(245,158,11,.04) 0%,transparent 45%),var(--bg);min-height:100vh;padding-bottom:calc(var(--nav-h)+72px);position:relative}
-.top-bar{position:sticky;top:0;z-index:100;background:rgba(250,250,247,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 20px 10px}
+.app{background:linear-gradient(180deg,#FFFFFF 0%,#F7F8FA 38%,#EEF0F3 100%);min-height:100vh;padding-bottom:calc(var(--nav-h)+72px);position:relative}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.82);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(233,234,236,.9);padding:14px 20px 10px}
 .top-bar__row{display:flex;align-items:center;justify-content:space-between}
 .top-bar__title{font-size:20px;font-weight:800;display:flex;align-items:center;gap:6px;letter-spacing:-0.02em}
-.top-bar__title svg{width:22px;height:22px;color:var(--primary)}
+.top-bar__title svg{width:22px;height:22px;color:var(--text)}
 .top-bar__date{font-size:12px;color:var(--text-sub);margin-top:2px}
-.top-bar__add{width:36px;height:36px;border-radius:var(--r-md);background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .top-bar__btns{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.top-bar__btn{height:34px;padding:0 10px;border-radius:var(--r-md);display:flex;align-items:center;gap:4px;font-size:13px;font-weight:700;background:var(--primary-light);color:var(--primary);white-space:nowrap}
+.top-bar__btn{height:34px;padding:0 12px;border-radius:999px;display:flex;align-items:center;gap:5px;font-size:13px;font-weight:600;background:var(--surface);color:var(--text);border:1px solid var(--border);white-space:nowrap;box-shadow:var(--shadow-sm)}
 .top-bar__btn svg{width:17px;height:17px}
-.top-bar__btn--cfg{background:#FEF3C7;color:#B45309}
+.top-bar__btn--cfg{background:var(--surface);color:var(--text)}
 .top-bar__btn:active{transform:scale(.94)}
 .backup-note{font-size:12px;color:var(--text-sub);line-height:1.6}
 .backup-note b{color:var(--text-main)}
@@ -38,7 +37,7 @@ svg{display:block}
 @keyframes reveal{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .reveal{opacity:1}
 #app.app--intro .reveal{animation:reveal .35s ease-out both}
-.summary-card{background:var(--surface);margin:12px 16px 0;border-radius:var(--r-lg);padding:18px 8px;box-shadow:var(--shadow-sm);border:1px solid var(--border);display:flex}
+.summary-card{background:var(--surface);margin:14px 16px 0;border-radius:var(--r-lg);padding:20px 8px;box-shadow:var(--shadow-sm);display:flex}
 .summary-item{flex:1;text-align:center;position:relative}
 .summary-item+.summary-item::before{content:'';position:absolute;left:0;top:15%;bottom:15%;width:1px;background:var(--border)}
 .summary-item__num{font-family:var(--mono);font-size:22px;font-weight:700;letter-spacing:-0.03em}
@@ -46,14 +45,31 @@ svg{display:block}
 .summary-item__num--income{color:var(--success)}
 .summary-item__num--neutral{color:var(--text)}
 .summary-item__label{font-size:11px;color:var(--text-sub);margin-top:4px}
-.tab-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:var(--max-w);height:var(--nav-h);background:rgba(255,255,255,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;z-index:200}
-.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--text-mute);font-size:11px;transition:color .2s}
+.tab-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:var(--max-w);height:var(--nav-h);background:rgba(255,255,255,.9);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-top:1px solid rgba(233,234,236,.9);display:flex;align-items:center;z-index:200;padding-bottom:env(safe-area-inset-bottom,0px)}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--text-mute);font-size:11px;font-weight:600;transition:color .2s}
 .tab-item svg{width:22px;height:22px;stroke-width:1.75}
-.tab-item.active{color:var(--primary)}
-.tab-item.active svg{stroke-width:2}
-.fab{position:fixed;bottom:calc(var(--nav-h)+16px);left:50%;transform:translateX(-50%);width:56px;height:56px;border-radius:50%;background:var(--primary);color:#fff;border:4px solid var(--bg);box-shadow:0 4px 16px rgba(13,148,136,.4);display:flex;align-items:center;justify-content:center;z-index:150;transition:transform .15s}
-.fab:active{transform:translateX(-50%) scale(.9)}
-.fab svg{width:24px;height:24px}
+.tab-item.active{color:var(--text)}
+.tab-item.active svg{stroke-width:2.1}
+/* 底部导航中间的白色圆形加号 */
+.tab-plus{width:52px;height:52px;border-radius:50%;background:#fff;color:var(--text);border:1px solid var(--border);box-shadow:0 10px 26px rgba(17,18,20,.16);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin:0 4px;transition:box-shadow .26s}
+.tab-plus svg{width:26px;height:26px;transition:transform .26s cubic-bezier(.22,1,.36,1)}
+.tab-plus:active{box-shadow:0 6px 16px rgba(17,18,20,.14)}
+.tab-plus--open svg{transform:rotate(45deg)}
+.tab-plus--open{box-shadow:0 12px 30px rgba(17,18,20,.22)}
+/* 加号展开菜单：支出 / 收入 / 自定义 */
+.create-menu{position:fixed;inset:0;z-index:250;display:flex;flex-direction:column;justify-content:flex-end}
+.create-menu--closing{pointer-events:none}
+.create-menu__scrim{position:absolute;inset:0;background:rgba(15,16,18,.34);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);animation:menuScrimIn .22s ease both}
+.create-menu--closing .create-menu__scrim{animation:menuScrimOut .16s ease both}
+@keyframes menuScrimIn{from{opacity:0}to{opacity:1}}
+@keyframes menuScrimOut{from{opacity:1}to{opacity:0}}
+.create-menu__panel{position:relative;width:100%;max-width:var(--max-w);margin:0 auto;padding:0 24px calc(var(--nav-h) + 18px);display:flex;flex-direction:column;align-items:center;gap:12px}
+.create-menu__item{width:100%;max-width:320px;display:flex;align-items:center;justify-content:center;gap:10px;padding:16px 20px;border-radius:999px;background:#fff;color:var(--text);font-size:16px;font-weight:600;border:1px solid var(--border);box-shadow:var(--shadow-lg);animation:menuItemIn .3s cubic-bezier(.22,1,.36,1) both}
+.create-menu__item svg{width:20px;height:20px}
+.create-menu__item:active{opacity:.82}
+.create-menu--closing .create-menu__item{animation:menuItemOut .14s ease both}
+@keyframes menuItemIn{from{opacity:0;transform:translateY(18px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes menuItemOut{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(12px) scale(.95)}}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s ease;overscroll-behavior:contain}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .modal{background:var(--surface);width:100%;max-width:var(--max-w);border-radius:var(--r-lg) var(--r-lg) 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));max-height:85vh;overflow-y:auto;animation:slideUp .28s cubic-bezier(.22,1,.36,1)}
@@ -83,11 +99,13 @@ svg{display:block}
 .field__input,.field__select{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:var(--r-md);font-size:15px;background:var(--bg);outline:none}
 .field__input:focus,.field__select:focus{border-color:var(--primary)}
 .type-toggle{display:flex;gap:8px}
-.type-toggle__btn{flex:1;padding:10px;border-radius:var(--r-md);font-size:14px;font-weight:600;border:2px solid var(--border);color:var(--text-sub)}
-.type-toggle__btn--active{border-color:var(--primary);color:var(--primary);background:var(--primary-light)}
-.btn{width:100%;padding:13px;border-radius:var(--r-md);font-size:15px;font-weight:600;transition:opacity .15s}
-.btn--primary{background:var(--primary);color:#fff}
-.btn--outline{border:2px solid var(--border);color:var(--text);background:transparent}
+.type-toggle__btn{flex:1;padding:11px;border-radius:var(--r-md);font-size:14px;font-weight:600;border:1px solid var(--border);color:var(--text-sub);background:var(--surface)}
+.type-toggle__btn--active{border-color:var(--primary);color:#fff;background:var(--primary)}
+.btn{width:100%;padding:14px;border-radius:var(--r-md);font-size:15px;font-weight:600;transition:transform .12s,opacity .15s}
+.btn--primary{background:var(--primary);color:#fff;box-shadow:0 8px 20px rgba(17,18,20,.18)}
+.btn--primary:active{transform:scale(.985)}
+.btn--outline{border:1px solid var(--border);color:var(--text);background:var(--surface)}
+.btn--outline:active{transform:scale(.985)}
 .btn:disabled{opacity:.45}
 .btn-row{display:flex;gap:10px;margin-top:16px}
 .btn-row .btn{flex:1}
@@ -95,13 +113,12 @@ svg{display:block}
 .page-record{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
 .page-record .top-bar{position:static;flex-shrink:0}
 .page-record .summary-card{flex-shrink:0}
-.record-entry{flex-shrink:0}
 .tx-scroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-bottom:calc(var(--nav-h) + 84px)}
 .stats-spacer{height:calc(var(--nav-h) + 84px);flex-shrink:0}
 .tx-date-group{font-size:12px;color:var(--text-sub);margin:14px 0 6px;font-weight:600;display:flex;justify-content:space-between}
-.tx-item{background:var(--surface);border-radius:var(--r-md);padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow-sm);border:1px solid var(--border);transition:transform .08s}
+.tx-item{background:var(--surface);border-radius:var(--r-md);padding:13px 15px;margin-bottom:8px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow-sm);transition:transform .08s}
 .tx-item:active{transform:scale(.985)}
-.tx-icon{width:40px;height:40px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tx-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#F3F4F6;color:var(--text)}
 .tx-icon svg{width:20px;height:20px}
 .tx-body{flex:1;min-width:0}
 .tx-note{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -133,7 +150,7 @@ svg{display:block}
 .rp-years::-webkit-scrollbar{display:none}
 .rp-months{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:4px}
 .rp-months .month-chip{padding:9px 0;display:flex;align-items:center;justify-content:center}
-.chart-card{background:var(--surface);border-radius:var(--r-lg);padding:16px;margin:0 16px 12px;box-shadow:var(--shadow-sm);border:1px solid var(--border)}
+.chart-card{background:var(--surface);border-radius:var(--r-lg);padding:18px;margin:0 16px 14px;box-shadow:var(--shadow-sm)}
 .chart-card__title{font-size:13px;color:var(--text-sub);margin-bottom:12px;display:flex;align-items:center;gap:6px;font-weight:600}
 .chart-card__title svg{width:16px;height:16px}
 .chart-svg{width:100%}
@@ -145,8 +162,6 @@ svg{display:block}
 .toast{position:fixed;top:72px;left:50%;transform:translateX(-50%);background:rgba(28,25,23,.9);color:#fff;padding:8px 20px;border-radius:20px;font-size:13px;z-index:20000;animation:toastIn .25s ease}
 @keyframes toastIn{from{opacity:0;transform:translate(-50%,-8px)}to{opacity:1;transform:translate(-50%,0)}}
 .hint-box{margin-top:14px;padding:12px;background:var(--bg);border-radius:var(--r-md);font-size:12px;color:var(--text-sub);line-height:1.8}
-.voice-big-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;font-size:16px;font-weight:700;border-radius:var(--r-md);box-shadow:0 2px 8px rgba(13,148,136,.3)}
-.voice-big-btn svg{width:22px;height:22px}
 .voice-status{padding:10px 14px;border-radius:var(--r-md);font-size:13px;margin:10px 0;display:none}
 .voice-status--show{display:block}
 .voice-status--error{background:#FEF2F2;border:1px solid #FECACA;color:#991B1B}
@@ -271,6 +286,7 @@ var ICONS={
   upload:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>',
   settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
   calendar:'<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+  'arrow-up-right':'<path d="M7 17L17 7"/><path d="M8 7h9v9"/>',
 };
 function icon(name,size){size=size||20;var inner=ICONS[name]||ICONS['package'];return '<svg xmlns="http://www.w3.org/2000/svg" width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">'+inner+'</svg>'}
 
@@ -1053,6 +1069,33 @@ function rpPickMonth(ym){
   state.recordPeriod=ym;
   render();
 }
+// ========== 底部加号展开菜单：支出 / 收入 / 自定义（DOM 注入 + 展开动效，无闪烁） ==========
+function buildCreateMenuHTML(){
+  return '<div id="__create_menu__" class="create-menu"><div class="create-menu__scrim" onclick="closeCreateMenu()"></div><div class="create-menu__panel">'
+    +'<button class="create-menu__item" style="animation-delay:.02s" onclick="__createMenuPick__(\'expense\')">'+icon('arrow-up-right',20)+'<span>支出</span></button>'
+    +'<button class="create-menu__item" style="animation-delay:.07s" onclick="__createMenuPick__(\'income\')">'+icon('arrow-down-left',20)+'<span>收入</span></button>'
+    +'<button class="create-menu__item" style="animation-delay:.12s" onclick="__createMenuPick__(\'custom\')">'+icon('settings',20)+'<span>自定义</span></button>'
+    +'</div></div>';
+}
+function openCreateMenu(){
+  closeCreateMenu();
+  var tmp=document.createElement('div');tmp.innerHTML=buildCreateMenuHTML();document.body.appendChild(tmp.firstElementChild);
+  var p=document.getElementById('__tab_plus__');if(p)p.classList.add('tab-plus--open');
+}
+function closeCreateMenu(){
+  var el=document.getElementById('__create_menu__');
+  var p=document.getElementById('__tab_plus__');if(p)p.classList.remove('tab-plus--open');
+  if(!el)return;
+  // 收起动效后再移除节点；关闭期间不拦截点击
+  el.classList.add('create-menu--closing');
+  setTimeout(function(){if(el&&el.parentNode)el.parentNode.removeChild(el)},160);
+}
+function __createMenuPick__(kind){
+  closeCreateMenu();
+  if(kind==='income')openVoiceModal('income');
+  else if(kind==='custom')openMappingModal();
+  else openVoiceModal('expense');
+}
 function getMonthOptions(){var m={};m[new Date().toISOString().slice(0,7)]=true;for(var i=0;i<state.txs.length;i++)m[state.txs[i].date.slice(0,7)]=true;return Object.keys(m).sort(function(a,b){return b.localeCompare(a)}).map(function(ym){return{value:ym,label:monthLabel(ym)}})}
 function getYearOptions(){var y={};y[new Date().toISOString().slice(0,4)]=true;for(var i=0;i<state.txs.length;i++)y[state.txs[i].date.slice(0,4)]=true;return Object.keys(y).sort(function(a,b){return b.localeCompare(a)}).map(function(yr){return{value:yr,label:yr+'年'}})}
 function getDayOptions(period){var d={};for(var i=0;i<state.txs.length;i++){var dt=state.txs[i].date;if(dt.startsWith(period))d[dt]=true}var keys=Object.keys(d).sort(function(a,b){return b.localeCompare(a)});if(!keys.length)keys=[period];return keys.map(function(dt){var p=dt.split('-');return{value:dt,label:parseInt(p[1])+'月'+parseInt(p[2])+'日'}})}
@@ -1140,7 +1183,7 @@ function __fmtMD__(date){date=String(date||'');return parseInt(date.slice(5,7),1
 function __txDetailRowHTML__(t,showDate){
   var meta=getCatMeta(t.category,t.type),sign=t.type==='expense'?'-':'+',cls=t.type==='expense'?'tx-amount--expense':'tx-amount--income';
   var metaLine=(showDate&&t.date?__fmtMD__(t.date)+' · ':'')+t.category+' · '+(t.time||'');
-  return '<div class="detail-row"><div class="tx-icon" style="background:'+meta.bg+';color:'+meta.color+'">'+icon(meta.icon,20)+'</div><div class="detail-row__body"><div class="detail-row__note">'+(t.note||t.category)+'</div><div class="detail-row__meta">'+metaLine+'</div></div><div class="tx-amount '+cls+'">'+sign+'¥'+t.amount.toFixed(2)+'</div></div>';
+  return '<div class="detail-row"><div class="tx-icon">'+icon(meta.icon,20)+'</div><div class="detail-row__body"><div class="detail-row__note">'+(t.note||t.category)+'</div><div class="detail-row__meta">'+metaLine+'</div></div><div class="tx-amount '+cls+'">'+sign+'¥'+t.amount.toFixed(2)+'</div></div>';
 }
 function __detachDetailModal__(){var el=document.getElementById('__detail_modal__');if(el&&el.parentNode)el.parentNode.removeChild(el);__syncScrollLock__();}
 function __closeDetailModal__(){__detachDetailModal__();}
@@ -1176,7 +1219,7 @@ function render(){
   var topDateHTML=(state.tab==='record')
     ?'<button class="top-bar__date-btn" onclick="openRecordPeriodModal()" title="点击切换月份">'+icon('calendar',13)+' '+todayStr()+'<span class="top-bar__date-caret">▼</span></button>'
     :'<div class="top-bar__date">'+todayStr()+'</div>';
-  var topBarHTML='<div class="top-bar"><div class="top-bar__row"><div><div class="top-bar__title">'+icon('wallet',22)+' 记账小管家</div>'+topDateHTML+'</div><div class="top-bar__btns"><button class="top-bar__btn" onclick="exportBackup()">'+icon('download',17)+'导出</button><button class="top-bar__btn top-bar__btn--cfg" onclick="openConfigModal()">'+icon('settings',17)+'配置</button><button class="top-bar__add" onclick="openMappingModal()">'+icon('plus',20)+'</button></div></div></div>';
+  var topBarHTML='<div class="top-bar"><div class="top-bar__row"><div><div class="top-bar__title">'+icon('wallet',22)+' 记账小管家</div>'+topDateHTML+'</div><div class="top-bar__btns"><button class="top-bar__btn" onclick="exportBackup()">'+icon('download',17)+'导出</button><button class="top-bar__btn top-bar__btn--cfg" onclick="openConfigModal()">'+icon('settings',17)+'配置</button></div></div></div>';
   if(state.tab==='record'){
     var ym=state.recordPeriod||new Date().toISOString().slice(0,7);
     state.recordPeriod=ym;
@@ -1185,7 +1228,6 @@ function render(){
     var exp=getMonthExpense(ym),inc=getMonthIncome(ym),bal=Math.round((inc-exp)*100)/100;
     html+='<div class="page-record">'+topBarHTML;
     html+='<div class="summary-card reveal"><div class="summary-item"><div class="summary-item__num summary-item__num--expense">¥'+exp.toFixed(2)+'</div><div class="summary-item__label">'+mLbl+'支出</div></div><div class="summary-item"><div class="summary-item__num '+(bal>=0?'summary-item__num--income':'summary-item__num--expense')+'">¥'+bal.toFixed(2)+'</div><div class="summary-item__label">'+mLbl+'结余</div></div><div class="summary-item"><div class="summary-item__num summary-item__num--income">¥'+inc.toFixed(2)+'</div><div class="summary-item__label">'+mLbl+'收入</div></div></div>';
-    html+='<div class="record-entry" style="padding:12px 16px 4px;display:flex;gap:10px"><button class="btn btn--primary voice-big-btn" style="flex:1" onclick="openVoiceModal(\'expense\')">'+icon('plus',20)+' 支出</button><button class="btn voice-big-btn" style="flex:1;background:var(--success);color:#fff;box-shadow:0 2px 8px rgba(22,163,74,.3)" onclick="openVoiceModal(\'income\')">'+icon('arrow-down-left',20)+' 收入</button></div>';
     var groups=getGroupedTxs(ym);
     html+='<div class="tx-scroll"><div class="tx-list">';
     if(groups.length){var d=0;
@@ -1194,7 +1236,7 @@ function render(){
         if(g.income>0)grpTail='收入 ¥'+g.income.toFixed(2)+' · '+grpTail;
         html+='<div class="tx-date-group reveal" style="animation-delay:'+d+'s"><span>'+g.dateStr+'</span><span>'+grpTail+'</span></div>';
         for(var ti=0;ti<g.items.length;ti++){var tx=g.items[ti],meta=getCatMeta(tx.category,tx.type),sign=tx.type==='expense'?'-':'+',cls=tx.type==='expense'?'tx-amount--expense':'tx-amount--income';
-          html+='<div class="tx-item reveal" style="animation-delay:'+d+'s"><div class="tx-icon" style="background:'+meta.bg+';color:'+meta.color+'">'+icon(meta.icon,20)+'</div><div class="tx-body"><div class="tx-note">'+tx.note+'</div><div class="tx-meta">'+tx.category+' · '+tx.time+'</div></div><div class="tx-amount '+cls+'">'+sign+'¥'+tx.amount.toFixed(2)+'</div><button class="tx-delete" onclick="deleteTx('+tx.id+')">删除</button></div>';
+          html+='<div class="tx-item reveal" style="animation-delay:'+d+'s"><div class="tx-icon">'+icon(meta.icon,20)+'</div><div class="tx-body"><div class="tx-note">'+tx.note+'</div><div class="tx-meta">'+tx.category+' · '+tx.time+'</div></div><div class="tx-amount '+cls+'">'+sign+'¥'+tx.amount.toFixed(2)+'</div><button class="tx-delete" onclick="deleteTx('+tx.id+')">删除</button></div>';
         }
       }
     }else{
@@ -1246,8 +1288,7 @@ function render(){
     }
     html+='<div class="stats-spacer"></div>';
   }
-  html+='<div class="fab" onclick="openVoiceModal()">'+icon('plus',24)+'</div>';
-  html+='<div class="tab-bar"><div class="tab-item '+(state.tab==='record'?'active':'')+'" onclick="switchTab(\'record\')">'+icon('receipt',22)+'<span>记账</span></div><div class="tab-item '+(state.tab==='stats'?'active':'')+'" onclick="switchTab(\'stats\')">'+icon('bar-chart-3',22)+'<span>统计</span></div></div>';
+  html+='<div class="tab-bar"><div class="tab-item '+(state.tab==='record'?'active':'')+'" onclick="switchTab(\'record\')">'+icon('receipt',22)+'<span>记账</span></div><button class="tab-plus" id="__tab_plus__" onclick="openCreateMenu()" aria-label="记一笔">'+icon('plus',26)+'</button><div class="tab-item '+(state.tab==='stats'?'active':'')+'" onclick="switchTab(\'stats\')">'+icon('bar-chart-3',22)+'<span>统计</span></div></div>';
 
   // Voice modal
   if(state.voiceModal){
@@ -1321,6 +1362,7 @@ window.openMappingModal=openMappingModal;window.closeMappingModal=closeMappingMo
 window.__mappingSetType__=__mappingSetType__;window.__hideDupMappingModal__=__hideDupMappingModal__;window.__resolveDupMapping__=__resolveDupMapping__;
 window.__openDayDetail__=__openDayDetail__;window.__openCatDetail__=__openCatDetail__;window.__closeDetailModal__=__closeDetailModal__;
 window.openRecordPeriodModal=openRecordPeriodModal;window.closeRecordPeriodModal=closeRecordPeriodModal;window.rpPickYear=rpPickYear;window.rpPickMonth=rpPickMonth;
+window.openCreateMenu=openCreateMenu;window.closeCreateMenu=closeCreateMenu;window.__createMenuPick__=__createMenuPick__;
 document.addEventListener('DOMContentLoaded',init);
 </script>
 </body>
