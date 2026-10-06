@@ -12,11 +12,13 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{-webkit-text-size-adjust:100%}
 body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;max-width:var(--max-w);margin:0 auto;min-height:100vh;font-size:14px;overscroll-behavior:none}
+body::before{content:'';position:fixed;inset:0;z-index:-2;background:linear-gradient(180deg,#FFFFFF 0%,#F8F9FB 34%,#E3E7EC 100%)}
+body::after{content:'';position:fixed;top:-18%;left:50%;transform:translateX(-50%);width:132%;height:56%;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 50% 0%,rgba(255,255,255,.95) 0%,rgba(255,255,255,0) 68%);filter:blur(36px)}
 button{font-family:inherit;cursor:pointer;border:none;background:none}
 input,select,textarea{font-family:inherit;font-size:inherit}
 svg{display:block}
-.app{background:linear-gradient(180deg,#FFFFFF 0%,#F7F8FA 38%,#EEF0F3 100%);min-height:100vh;padding-bottom:calc(var(--nav-h)+72px);position:relative}
-.top-bar{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.82);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(233,234,236,.9);padding:14px 20px 10px}
+.app{background:transparent;min-height:100vh;padding-bottom:calc(var(--nav-h)+72px);position:relative}
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:none;padding:14px 20px 10px}
 .top-bar__row{display:flex;align-items:center;justify-content:space-between}
 .top-bar__title{font-size:20px;font-weight:800;display:flex;align-items:center;gap:6px;letter-spacing:-0.02em}
 .top-bar__title svg{width:22px;height:22px;color:var(--text)}
@@ -45,11 +47,11 @@ svg{display:block}
 .summary-item__num--income{color:var(--success)}
 .summary-item__num--neutral{color:var(--text)}
 .summary-item__label{font-size:11px;color:var(--text-sub);margin-top:4px}
-.tab-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:var(--max-w);height:var(--nav-h);background:rgba(255,255,255,.9);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-top:1px solid rgba(233,234,236,.9);display:flex;align-items:center;z-index:200;padding-bottom:env(safe-area-inset-bottom,0px)}
-.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--text-mute);font-size:11px;font-weight:600;transition:color .2s}
-.tab-item svg{width:22px;height:22px;stroke-width:1.75}
-.tab-item.active{color:var(--text)}
-.tab-item.active svg{stroke-width:2.1}
+.tab-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:var(--max-w);height:var(--nav-h);background:transparent;border:none;display:flex;align-items:center;z-index:200;padding-bottom:env(safe-area-inset-bottom,0px)}
+.tab-item{flex:1;display:flex;align-items:center;justify-content:center;color:rgba(15,16,18,.40);transition:color .25s,transform .25s}
+.tab-item svg{width:24px;height:24px;stroke-width:1.8}
+.tab-item.active{color:var(--text);transform:translateY(-1px)}
+.tab-item.active svg{stroke-width:2.2}
 /* 底部导航中间的白色圆形加号 */
 .tab-plus{width:52px;height:52px;border-radius:50%;background:#fff;color:var(--text);border:1px solid var(--border);box-shadow:0 10px 26px rgba(17,18,20,.16);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin:0 4px;transition:box-shadow .26s}
 .tab-plus svg{width:26px;height:26px;transition:transform .26s cubic-bezier(.22,1,.36,1)}
@@ -63,12 +65,12 @@ svg{display:block}
 .create-menu--closing .create-menu__scrim{animation:menuScrimOut .16s ease both}
 @keyframes menuScrimIn{from{opacity:0}to{opacity:1}}
 @keyframes menuScrimOut{from{opacity:1}to{opacity:0}}
-.create-menu__panel{position:relative;width:100%;max-width:var(--max-w);margin:0 auto;padding:0 24px calc(var(--nav-h) + 18px);display:flex;flex-direction:column;align-items:center;gap:12px}
-.create-menu__item{width:100%;max-width:320px;display:flex;align-items:center;justify-content:center;gap:10px;padding:16px 20px;border-radius:999px;background:#fff;color:var(--text);font-size:16px;font-weight:600;border:1px solid var(--border);box-shadow:var(--shadow-lg);animation:menuItemIn .3s cubic-bezier(.22,1,.36,1) both}
+.create-menu__panel{position:relative;width:100%;max-width:var(--max-w);margin:0 auto;padding:0 24px calc(var(--nav-h) + 18px);display:flex;flex-direction:column;align-items:center;gap:12px;transform-origin:bottom center}
+.create-menu__item{width:100%;max-width:320px;display:flex;align-items:center;justify-content:center;gap:10px;padding:16px 20px;border-radius:999px;background:#fff;color:var(--text);font-size:16px;font-weight:600;border:1px solid var(--border);box-shadow:var(--shadow-lg);animation:menuItemIn .4s cubic-bezier(.34,1.56,.64,1) both}
 .create-menu__item svg{width:20px;height:20px}
 .create-menu__item:active{opacity:.82}
 .create-menu--closing .create-menu__item{animation:menuItemOut .14s ease both}
-@keyframes menuItemIn{from{opacity:0;transform:translateY(18px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes menuItemIn{from{opacity:0;transform:translateY(30px) scale(.82)}65%{opacity:1}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes menuItemOut{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(12px) scale(.95)}}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s ease;overscroll-behavior:contain}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -113,7 +115,7 @@ svg{display:block}
 .page-record{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
 .page-record .top-bar{position:static;flex-shrink:0}
 .page-record .summary-card{flex-shrink:0}
-.tx-scroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-bottom:calc(var(--nav-h) + 84px)}
+.tx-scroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-bottom:calc(var(--nav-h) + 84px);position:relative}
 .stats-spacer{height:calc(var(--nav-h) + 84px);flex-shrink:0}
 .tx-date-group{font-size:12px;color:var(--text-sub);margin:14px 0 6px;font-weight:600;display:flex;justify-content:space-between}
 .tx-item{background:var(--surface);border-radius:var(--r-md);padding:13px 15px;margin-bottom:8px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow-sm);transition:transform .08s}
@@ -141,15 +143,29 @@ svg{display:block}
 .month-selector::-webkit-scrollbar{display:none}
 .month-chip{padding:6px 14px;border-radius:20px;background:var(--surface);border:1px solid var(--border);font-size:13px;white-space:nowrap;flex-shrink:0;color:var(--text-sub)}
 .month-chip--active{background:var(--primary);color:#fff;border-color:var(--primary)}
-.mchip-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--primary);margin-left:4px;vertical-align:middle;opacity:.5}
-.month-chip--active .mchip-dot{background:#fff;opacity:.9}
-.top-bar__date-btn{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--primary);background:transparent;border:none;padding:2px 0;margin-top:2px;cursor:pointer;font-family:inherit}
-.top-bar__date-btn svg{width:13px;height:13px}
-.top-bar__date-caret{font-size:9px;opacity:.8;transform:translateY(-1px)}
-.rp-years{display:flex;gap:8px;overflow-x:auto;padding:0 0 12px;scrollbar-width:none}
-.rp-years::-webkit-scrollbar{display:none}
-.rp-months{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:4px}
-.rp-months .month-chip{padding:9px 0;display:flex;align-items:center;justify-content:center}
+/* 左上角圆形日历按钮 */
+.cal-btn{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.74);border:1px solid rgba(233,234,236,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:var(--text);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-sm);transition:transform .16s}
+.cal-btn svg{width:19px;height:19px}
+.cal-btn:active{transform:scale(.92)}
+/* 左上角三同心圆日期转盘 */
+.date-dial{position:fixed;inset:0;z-index:320}
+.date-dial__scrim{position:absolute;inset:0;background:rgba(15,16,18,.32);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);animation:fadeIn .18s ease both}
+.date-dial__inner{position:relative;width:100%;max-width:var(--max-w);height:100%;margin:0 auto}
+.date-dial__disc{position:absolute;top:0;left:0;width:min(318px,84vw);height:min(318px,84vw);transform-origin:top left;animation:dialIn .34s cubic-bezier(.22,1,.36,1) both}
+.date-dial__disc svg{width:100%;height:100%;display:block;overflow:visible}
+@keyframes dialIn{from{opacity:0;transform:scale(.55)}to{opacity:1;transform:scale(1)}}
+.date-dial__foot{position:absolute;top:calc(min(318px,84vw) - 8px);left:0;right:0;padding:0 18px;display:flex;align-items:center;justify-content:flex-end;gap:10px;animation:fadeIn .26s ease .08s both}
+.date-dial__readout{font-size:14px;font-weight:700;color:var(--text);background:rgba(255,255,255,.92);border:1px solid var(--border);border-radius:999px;padding:8px 15px;box-shadow:var(--shadow-sm)}
+.date-dial__ok{padding:10px 24px;border-radius:999px;background:var(--primary);color:#fff;font-size:14px;font-weight:700;box-shadow:0 8px 20px rgba(17,18,20,.22);transition:transform .14s}
+.date-dial__ok:active{transform:scale(.96)}
+/* 无记录提示弹窗（右上角带 × 关闭） */
+.alert-modal{position:relative;text-align:center;padding:26px 22px 22px}
+.alert-modal__x{position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text-sub);background:var(--bg)}
+.alert-modal__x svg{width:16px;height:16px}
+.alert-modal__icon{width:54px;height:54px;border-radius:50%;background:var(--bg);color:var(--text-sub);display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
+.alert-modal__icon svg{width:26px;height:26px}
+.alert-modal__title{font-size:16px;font-weight:700}
+.alert-modal__msg{font-size:13px;color:var(--text-sub);margin-top:6px;line-height:1.7}
 .chart-card{background:var(--surface);border-radius:var(--r-lg);padding:18px;margin:0 16px 14px;box-shadow:var(--shadow-sm)}
 .chart-card__title{font-size:13px;color:var(--text-sub);margin-bottom:12px;display:flex;align-items:center;gap:6px;font-weight:600}
 .chart-card__title svg{width:16px;height:16px}
@@ -1034,41 +1050,103 @@ function getMonthIncome(ym){ym=ym||new Date().toISOString().slice(0,7);var s=0;f
 function getGroupedTxs(ym){var g={};for(var i=0;i<state.txs.length;i++){var t=state.txs[i];if(ym&&t.date.slice(0,7)!==ym)continue;if(!g[t.date])g[t.date]={date:t.date,items:[],expense:0,income:0};g[t.date].items.push(t);if(t.type==='expense')g[t.date].expense+=t.amount;else if(t.type==='income')g[t.date].income+=t.amount}return Object.keys(g).sort(function(a,b){return b.localeCompare(a)}).map(function(k){var o=g[k],p=o.date.split('-'),wk=['日','一','二','三','四','五','六'];o.dateStr=parseInt(p[1])+'月'+parseInt(p[2])+'日 星期'+wk[new Date(o.date).getDay()];return o})}
 // 记账页：年份列表（有数据的年份 ∪ 当前年）
 function getRecordYears(){var y={};y[new Date().toISOString().slice(0,4)]=true;for(var i=0;i<state.txs.length;i++)y[state.txs[i].date.slice(0,4)]=true;return Object.keys(y).sort(function(a,b){return b.localeCompare(a)})}
-// 记账页：某年中有记账的月份集合（用于月份胶囊上的小圆点提示）
-function getRecordMonthsWithData(year){var m={};for(var i=0;i<state.txs.length;i++){var d=state.txs[i].date;if(d.slice(0,4)===year)m[parseInt(d.slice(5,7),10)]=true}return m}
-// ========== 记账页「切换月份」弹窗（DOM 注入，打开/关闭均无闪烁） ==========
-function __rpYearChipsHTML__(year){
-  var years=getRecordYears(),h='';
-  for(var i=0;i<years.length;i++)h+='<div class="month-chip '+(years[i]===year?'month-chip--active':'')+'" onclick="rpPickYear(\''+years[i]+'\')">'+years[i]+'年</div>';
-  return h;
+// ========== 左上角三同心圆日期转盘：年 / 月 / 日（DOM 注入，打开/关闭无闪烁） ==========
+var __dialSel__=null;        // {years:[], yi:年索引, m:月(1-12), d:日索引(0=无)}
+var __scrollToDate__=null;   // 确认后需要滚动到的日期 YYYY-MM-DD
+
+// 该年月中「有记账」的日期（升序去重）
+function __dialMonthDays__(year,month){
+  var p=year+'-'+String(month).padStart(2,'0'),ds=[];
+  for(var i=0;i<state.txs.length;i++){var d=state.txs[i].date;if(d.slice(0,7)===p)ds.push(parseInt(d.slice(8,10),10))}
+  ds.sort(function(a,b){return a-b});
+  var u=[];for(var j=0;j<ds.length;j++)if(u[u.length-1]!==ds[j])u.push(ds[j]);
+  return u;
 }
-function __rpMonthChipsHTML__(year){
-  var ym=state.recordPeriod,md=getRecordMonthsWithData(year),h='';
-  for(var m=1;m<=12;m++){var val=year+'-'+String(m).padStart(2,'0'),sel=(val===ym);
-    h+='<div class="month-chip '+(sel?'month-chip--active':'')+'" onclick="rpPickMonth(\''+val+'\')">'+m+'月'+(md[m]?'<span class="mchip-dot"></span>':'')+'</div>';}
-  return h;
+// 日环取值：0=无（表示仅切换到该月），其余为该月有记录的日
+function __dialDays__(){
+  if(!__dialSel__)return [0];
+  var y=__dialSel__.years[__dialSel__.yi];
+  return [0].concat(__dialMonthDays__(y,__dialSel__.m));
 }
-function buildRecordPeriodModalHTML(){
-  var year=state.recordPeriod.slice(0,4);
-  return '<div id="__record_period_modal__" class="modal-overlay" style="z-index:10000" onclick="if(event.target===this)closeRecordPeriodModal()"><div class="modal"><div class="modal__title">切换月份</div><div class="rp-years" id="__rp_years__">'+__rpYearChipsHTML__(year)+'</div><div class="rp-months" id="__rp_months__">'+__rpMonthChipsHTML__(year)+'</div><div class="btn-row"><button class="btn btn--primary" style="flex:1" onclick="closeRecordPeriodModal()">完成</button></div></div></div>';
+// 绘制 90° 扇环：均分 n 段，选中段填充深色
+function __dialRingPaths__(ring,n,rOut,rIn,selIdx){
+  if(!n||n<=0)return '';
+  var step=90/n,out='';
+  for(var k=0;k<n;k++){
+    var a0=k*step*Math.PI/180,a1=(k+1)*step*Math.PI/180;
+    var x0o=(rOut*Math.sin(a0)).toFixed(2),y0o=(rOut*Math.cos(a0)).toFixed(2);
+    var x1o=(rOut*Math.sin(a1)).toFixed(2),y1o=(rOut*Math.cos(a1)).toFixed(2);
+    var x1i=(rIn*Math.sin(a1)).toFixed(2),y1i=(rIn*Math.cos(a1)).toFixed(2);
+    var x0i=(rIn*Math.sin(a0)).toFixed(2),y0i=(rIn*Math.cos(a0)).toFixed(2);
+    var on=(k===selIdx);
+    out+='<path d="M'+x0o+' '+y0o+' A'+rOut+' '+rOut+' 0 0 1 '+x1o+' '+y1o+' L'+x1i+' '+y1i+' A'+rIn+' '+rIn+' 0 0 0 '+x0i+' '+y0i+' Z" fill="'+(on?'#111214':'rgba(255,255,255,.9)')+'" stroke="rgba(255,255,255,.95)" stroke-width="1.4" onclick="__dialPick__('+ring+','+k+')" style="cursor:pointer"/>';
+  }
+  return out;
 }
-function openRecordPeriodModal(){
-  closeRecordPeriodModal();
-  var tmp=document.createElement('div');tmp.innerHTML=buildRecordPeriodModalHTML();document.body.appendChild(tmp.firstElementChild);
+function __dialSVG__(){
+  if(!__dialSel__)return '';
+  var years=__dialSel__.years,days=__dialDays__();
+  return '<svg viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg">'
+    +__dialRingPaths__(0,years.length,250,214,__dialSel__.yi)
+    +__dialRingPaths__(1,12,204,168,__dialSel__.m-1)
+    +__dialRingPaths__(2,days.length,158,122,__dialSel__.d)
+    +'</svg>';
 }
-function closeRecordPeriodModal(){var el=document.getElementById('__record_period_modal__');if(el&&el.parentNode)el.parentNode.removeChild(el);}
-// 切换年份：只刷新弹窗内的年份/月份网格，不触发页面 render，避免闪烁
-function rpPickYear(year){
-  var yb=document.getElementById('__rp_years__'),mb=document.getElementById('__rp_months__');
-  if(yb)yb.innerHTML=__rpYearChipsHTML__(year);
-  if(mb)mb.innerHTML=__rpMonthChipsHTML__(year);
+function __dialReadout__(){
+  if(!__dialSel__)return '';
+  var y=__dialSel__.years[__dialSel__.yi],days=__dialDays__(),d=days[__dialSel__.d];
+  return y+'年 · '+__dialSel__.m+'月 · '+(d?(d+'日'):'无');
 }
-// 选中月份：先关闭弹窗再渲染列表，确保无闪烁
-function rpPickMonth(ym){
-  closeRecordPeriodModal();
+function __syncDateDial__(){
+  if(!__dialSel__)return;
+  var disc=document.getElementById('__dial_disc__');if(disc)disc.innerHTML=__dialSVG__();
+  var ro=document.getElementById('__dial_readout__');if(ro)ro.textContent=__dialReadout__();
+}
+// 点击环段：ring 0=年 1=月 2=日
+function __dialPick__(ring,k){
+  if(!__dialSel__)return;
+  if(ring===0){__dialSel__.yi=k;__dialSel__.d=0}
+  else if(ring===1){__dialSel__.m=k+1;__dialSel__.d=0}
+  else{__dialSel__.d=k}
+  var days=__dialDays__();
+  if(__dialSel__.d>=days.length)__dialSel__.d=0;
+  __syncDateDial__();
+}
+function buildDateDialHTML(){
+  return '<div id="__date_dial__" class="date-dial"><div class="date-dial__scrim" onclick="closeDateDial()"></div><div class="date-dial__inner"><div class="date-dial__disc" id="__dial_disc__">'+__dialSVG__()+'</div><div class="date-dial__foot"><span class="date-dial__readout" id="__dial_readout__">'+__dialReadout__()+'</span><button class="date-dial__ok" onclick="__dialConfirm__()">确定</button></div></div></div>';
+}
+function openDateDial(){
+  var cur=state.recordPeriod||new Date().toISOString().slice(0,7);
+  var years=getRecordYears(),yi=years.indexOf(cur.slice(0,4));
+  if(yi<0)yi=0;
+  __dialSel__={years:years,yi:yi,m:parseInt(cur.slice(5,7),10),d:0};
+  closeDateDial();
+  var tmp=document.createElement('div');tmp.innerHTML=buildDateDialHTML();document.body.appendChild(tmp.firstElementChild);
+}
+function closeDateDial(){
+  var el=document.getElementById('__date_dial__');if(el&&el.parentNode)el.parentNode.removeChild(el);
+  __dialSel__=null;
+}
+// 确认：无具体日→切到该月；有具体日→切月并滚动到该日；该月无数据→无记录提示
+function __dialConfirm__(){
+  if(!__dialSel__)return;
+  var y=__dialSel__.years[__dialSel__.yi],m=__dialSel__.m,days=__dialDays__(),d=days[__dialSel__.d];
+  var ym=y+'-'+String(m).padStart(2,'0'),has=false;
+  for(var i=0;i<state.txs.length;i++)if(state.txs[i].date.slice(0,7)===ym){has=true;break}
+  if(!has){closeDateDial();__showNoRecordAlert__(y+'年'+m+'月');return}
+  var targetDay=d?(ym+'-'+String(d).padStart(2,'0')):null;
+  closeDateDial();
   state.recordPeriod=ym;
+  if(targetDay)__scrollToDate__=targetDay;
   render();
 }
+// 无记录提示弹窗（右上角 × 关闭）
+function __showNoRecordAlert__(label){
+  var old=document.getElementById('__alert_modal__');if(old&&old.parentNode)old.parentNode.removeChild(old);
+  var html='<div id="__alert_modal__" class="modal-overlay" style="z-index:10001" onclick="if(event.target===this)__closeAlert__()"><div class="modal alert-modal"><button class="alert-modal__x" onclick="__closeAlert__()" aria-label="关闭">'+icon('x',16)+'</button><div class="alert-modal__icon">'+icon('inbox',26)+'</div><div class="alert-modal__title">该日期无记录</div><div class="alert-modal__msg">'+label+'暂无任何记账记录</div><div class="btn-row"><button class="btn btn--primary" style="flex:1" onclick="__closeAlert__()">知道了</button></div></div></div>';
+  var tmp=document.createElement('div');tmp.innerHTML=html;document.body.appendChild(tmp.firstElementChild);
+}
+function __closeAlert__(){var el=document.getElementById('__alert_modal__');if(el&&el.parentNode)el.parentNode.removeChild(el);}
 // ========== 底部加号展开菜单：支出 / 收入 / 自定义（DOM 注入 + 展开动效，无闪烁） ==========
 function buildCreateMenuHTML(){
   return '<div id="__create_menu__" class="create-menu"><div class="create-menu__scrim" onclick="closeCreateMenu()"></div><div class="create-menu__panel">'
@@ -1215,11 +1293,11 @@ function __openCatDetail__(cat,type){
 
 function render(){
   var app=$('#app'),html='';
-  // Top bar（记录页内嵌于固定布局，统计页置于顶部）
-  var topDateHTML=(state.tab==='record')
-    ?'<button class="top-bar__date-btn" onclick="openRecordPeriodModal()" title="点击切换月份">'+icon('calendar',13)+' '+todayStr()+'<span class="top-bar__date-caret">▼</span></button>'
-    :'<div class="top-bar__date">'+todayStr()+'</div>';
-  var topBarHTML='<div class="top-bar"><div class="top-bar__row"><div><div class="top-bar__title">'+icon('wallet',22)+' 记账小管家</div>'+topDateHTML+'</div><div class="top-bar__btns"><button class="top-bar__btn" onclick="exportBackup()">'+icon('download',17)+'导出</button><button class="top-bar__btn top-bar__btn--cfg" onclick="openConfigModal()">'+icon('settings',17)+'配置</button></div></div></div>';
+  // Top bar（记录页：左上角圆形日历按钮；统计页：顶部日期文字）
+  var topLeftHTML=(state.tab==='record')
+    ?'<button class="cal-btn" onclick="openDateDial()" title="选择日期" aria-label="选择日期">'+icon('calendar',19)+'</button>'
+    :'<div><div class="top-bar__title">'+icon('wallet',22)+' 记账小管家</div><div class="top-bar__date">'+todayStr()+'</div></div>';
+  var topBarHTML='<div class="top-bar"><div class="top-bar__row">'+topLeftHTML+'<div class="top-bar__btns"><button class="top-bar__btn" onclick="exportBackup()">'+icon('download',17)+'导出</button><button class="top-bar__btn top-bar__btn--cfg" onclick="openConfigModal()">'+icon('settings',17)+'配置</button></div></div></div>';
   if(state.tab==='record'){
     var ym=state.recordPeriod||new Date().toISOString().slice(0,7);
     state.recordPeriod=ym;
@@ -1234,7 +1312,7 @@ function render(){
       for(var gi=0;gi<groups.length;gi++){var g=groups[gi];d+=0.05;
         var grpTail='支出 ¥'+g.expense.toFixed(2);
         if(g.income>0)grpTail='收入 ¥'+g.income.toFixed(2)+' · '+grpTail;
-        html+='<div class="tx-date-group reveal" style="animation-delay:'+d+'s"><span>'+g.dateStr+'</span><span>'+grpTail+'</span></div>';
+        html+='<div class="tx-date-group reveal" data-date="'+g.date+'" style="animation-delay:'+d+'s"><span>'+g.dateStr+'</span><span>'+grpTail+'</span></div>';
         for(var ti=0;ti<g.items.length;ti++){var tx=g.items[ti],meta=getCatMeta(tx.category,tx.type),sign=tx.type==='expense'?'-':'+',cls=tx.type==='expense'?'tx-amount--expense':'tx-amount--income';
           html+='<div class="tx-item reveal" style="animation-delay:'+d+'s"><div class="tx-icon">'+icon(meta.icon,20)+'</div><div class="tx-body"><div class="tx-note">'+tx.note+'</div><div class="tx-meta">'+tx.category+' · '+tx.time+'</div></div><div class="tx-amount '+cls+'">'+sign+'¥'+tx.amount.toFixed(2)+'</div><button class="tx-delete" onclick="deleteTx('+tx.id+')">删除</button></div>';
         }
@@ -1288,7 +1366,7 @@ function render(){
     }
     html+='<div class="stats-spacer"></div>';
   }
-  html+='<div class="tab-bar"><div class="tab-item '+(state.tab==='record'?'active':'')+'" onclick="switchTab(\'record\')">'+icon('receipt',22)+'<span>记账</span></div><button class="tab-plus" id="__tab_plus__" onclick="openCreateMenu()" aria-label="记一笔">'+icon('plus',26)+'</button><div class="tab-item '+(state.tab==='stats'?'active':'')+'" onclick="switchTab(\'stats\')">'+icon('bar-chart-3',22)+'<span>统计</span></div></div>';
+  html+='<div class="tab-bar"><div class="tab-item '+(state.tab==='record'?'active':'')+'" onclick="switchTab(\'record\')" aria-label="记账">'+icon('receipt',24)+'</div><button class="tab-plus" id="__tab_plus__" onclick="openCreateMenu()" aria-label="记一笔">'+icon('plus',26)+'</button><div class="tab-item '+(state.tab==='stats'?'active':'')+'" onclick="switchTab(\'stats\')" aria-label="统计">'+icon('bar-chart-3',24)+'</div></div>';
 
   // Voice modal
   if(state.voiceModal){
@@ -1337,6 +1415,12 @@ function render(){
 
   // toast 由 showToast 直接以 DOM 注入显示，不参与整体 render（防闪烁）
   app.innerHTML=html;
+  // 日期转盘确认后：滚动到指定日期所在分组
+  if(state.tab==='record'&&__scrollToDate__){
+    var sd=__scrollToDate__;__scrollToDate__=null;
+    var sc=document.querySelector('.tx-scroll'),el=document.querySelector('.tx-date-group[data-date="'+sd+'"]');
+    if(sc&&el)sc.scrollTop=Math.max(0,el.offsetTop-8);
+  }
 }
 
 function init(){
@@ -1361,7 +1445,7 @@ window.exportBackup=exportBackup;window.openConfigModal=openConfigModal;window.c
 window.openMappingModal=openMappingModal;window.closeMappingModal=closeMappingModal;window.openMappingListModal=openMappingListModal;window.closeMappingListModal=closeMappingListModal;window.saveMapping=saveMapping;window.deleteMapping=deleteMapping;
 window.__mappingSetType__=__mappingSetType__;window.__hideDupMappingModal__=__hideDupMappingModal__;window.__resolveDupMapping__=__resolveDupMapping__;
 window.__openDayDetail__=__openDayDetail__;window.__openCatDetail__=__openCatDetail__;window.__closeDetailModal__=__closeDetailModal__;
-window.openRecordPeriodModal=openRecordPeriodModal;window.closeRecordPeriodModal=closeRecordPeriodModal;window.rpPickYear=rpPickYear;window.rpPickMonth=rpPickMonth;
+window.openDateDial=openDateDial;window.closeDateDial=closeDateDial;window.__dialPick__=__dialPick__;window.__dialConfirm__=__dialConfirm__;window.__closeAlert__=__closeAlert__;
 window.openCreateMenu=openCreateMenu;window.closeCreateMenu=closeCreateMenu;window.__createMenuPick__=__createMenuPick__;
 document.addEventListener('DOMContentLoaded',init);
 </script>
