@@ -52,26 +52,28 @@ svg{display:block}
 .tab-item svg{width:24px;height:24px;stroke-width:1.8}
 .tab-item.active{color:var(--text);transform:translateY(-1px)}
 .tab-item.active svg{stroke-width:2.2}
-/* 底部导航中间的白色圆形加号 */
-.tab-plus{width:52px;height:52px;border-radius:50%;background:#fff;color:var(--text);border:1px solid var(--border);box-shadow:0 10px 26px rgba(17,18,20,.16);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin:0 4px;transition:box-shadow .26s}
-.tab-plus svg{width:26px;height:26px;transition:transform .26s cubic-bezier(.22,1,.36,1)}
-.tab-plus:active{box-shadow:0 6px 16px rgba(17,18,20,.14)}
-.tab-plus--open svg{transform:rotate(45deg)}
-.tab-plus--open{box-shadow:0 12px 30px rgba(17,18,20,.22)}
-/* 加号展开菜单：支出 / 收入 / 自定义 */
-.create-menu{position:fixed;inset:0;z-index:250;display:flex;flex-direction:column;justify-content:flex-end}
-.create-menu--closing{pointer-events:none}
-.create-menu__scrim{position:absolute;inset:0;background:rgba(15,16,18,.34);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);animation:menuScrimIn .22s ease both}
-.create-menu--closing .create-menu__scrim{animation:menuScrimOut .16s ease both}
-@keyframes menuScrimIn{from{opacity:0}to{opacity:1}}
-@keyframes menuScrimOut{from{opacity:1}to{opacity:0}}
-.create-menu__panel{position:relative;width:100%;max-width:var(--max-w);margin:0 auto;padding:0 24px calc(var(--nav-h) + 18px);display:flex;flex-direction:column;align-items:center;gap:12px;transform-origin:bottom center}
-.create-menu__item{width:100%;max-width:320px;display:flex;align-items:center;justify-content:center;gap:10px;padding:16px 20px;border-radius:999px;background:#fff;color:var(--text);font-size:16px;font-weight:600;border:1px solid var(--border);box-shadow:var(--shadow-lg);animation:menuItemIn .4s cubic-bezier(.34,1.56,.64,1) both}
-.create-menu__item svg{width:20px;height:20px}
-.create-menu__item:active{opacity:.82}
-.create-menu--closing .create-menu__item{animation:menuItemOut .14s ease both}
-@keyframes menuItemIn{from{opacity:0;transform:translateY(30px) scale(.82)}65%{opacity:1}to{opacity:1;transform:translateY(0) scale(1)}}
-@keyframes menuItemOut{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(12px) scale(.95)}}
+/* 底部液态变形加号按钮（FAB）：径向扇形展开（上/左/右三个圆），SVG goo 滤镜产生水滴拉伸的黏稠感，无全屏遮罩 */
+.create-fab{position:fixed;left:50%;bottom:calc(var(--nav-h) + 6px + env(safe-area-inset-bottom,0px));z-index:260;width:200px;height:150px;transform:translateX(-50%);pointer-events:none}
+.create-fab__goo{position:absolute;inset:0;filter:url(#gooFab) drop-shadow(0 10px 26px rgba(17,18,20,.16))}
+/* 白色圆 blob：收起时全部叠在主圆上，展开时沿径向甩出，goo 滤镜形成液态拉丝 */
+.goo-blob{position:absolute;left:74px;top:90px;width:52px;height:52px;border-radius:50%;background:#fff}
+.goo-blob,.create-fab__item{transition:left .6s cubic-bezier(.55,.1,.3,1.4),top .6s cubic-bezier(.55,.1,.3,1.4),transform .6s cubic-bezier(.55,.1,.3,1.4),opacity .3s ease}
+.create-fab--open .goo-blob--top,.create-fab--open .create-fab__item--top{left:74px;top:16px}
+.create-fab--open .goo-blob--left,.create-fab--open .create-fab__item--left{left:5px;top:65px}
+.create-fab--open .goo-blob--right,.create-fab--open .create-fab__item--right{left:144px;top:65px}
+.create-fab--open .goo-blob--top,.create-fab--open .create-fab__item--top{transition-delay:0s}
+.create-fab--open .goo-blob--left,.create-fab--open .create-fab__item--left{transition-delay:.05s}
+.create-fab--open .goo-blob--right,.create-fab--open .create-fab__item--right{transition-delay:.1s}
+.create-fab--closing .goo-blob,.create-fab--closing .create-fab__item{transition-delay:0s;transition-duration:.3s,.3s,.3s,.15s}
+.create-fab__main{position:absolute;left:74px;top:90px;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text);pointer-events:auto}
+.create-fab__main svg{width:26px;height:26px;transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
+.create-fab--open .create-fab__main svg{transform:rotate(45deg)}
+/* 子按钮（图标层，白色圆由 goo 层提供）：与对应 blob 同步径向弹出 */
+.create-fab__item{position:absolute;left:74px;top:90px;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text);opacity:0;transform:scale(.2);pointer-events:none}
+.create-fab__item svg{width:22px;height:22px}
+.create-fab__char{font-size:17px;font-weight:700;line-height:1}
+.create-fab__item:active{opacity:.8}
+.create-fab--open .create-fab__item{opacity:1;transform:scale(1);pointer-events:auto}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s ease;overscroll-behavior:contain}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .modal{background:var(--surface);width:100%;max-width:var(--max-w);border-radius:var(--r-lg) var(--r-lg) 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));max-height:85vh;overflow-y:auto;animation:slideUp .28s cubic-bezier(.22,1,.36,1)}
@@ -1147,26 +1149,38 @@ function __showNoRecordAlert__(label){
   var tmp=document.createElement('div');tmp.innerHTML=html;document.body.appendChild(tmp.firstElementChild);
 }
 function __closeAlert__(){var el=document.getElementById('__alert_modal__');if(el&&el.parentNode)el.parentNode.removeChild(el);}
-// ========== 底部加号展开菜单：支出 / 收入 / 自定义（DOM 注入 + 展开动效，无闪烁） ==========
-function buildCreateMenuHTML(){
-  return '<div id="__create_menu__" class="create-menu"><div class="create-menu__scrim" onclick="closeCreateMenu()"></div><div class="create-menu__panel">'
-    +'<button class="create-menu__item" style="animation-delay:.02s" onclick="__createMenuPick__(\'expense\')">'+icon('arrow-up-right',20)+'<span>支出</span></button>'
-    +'<button class="create-menu__item" style="animation-delay:.07s" onclick="__createMenuPick__(\'income\')">'+icon('arrow-down-left',20)+'<span>收入</span></button>'
-    +'<button class="create-menu__item" style="animation-delay:.12s" onclick="__createMenuPick__(\'custom\')">'+icon('settings',20)+'<span>自定义</span></button>'
-    +'</div></div>';
+// ========== 底部液态变形加号按钮：支出 / 收入 / 自定义（固定注入 + 变形动效，无全屏遮罩） ==========
+function injectCreateFab(){
+  if(document.getElementById('__create_fab__'))return;
+  var fab=document.createElement('div');
+  fab.id='__create_fab__';
+  fab.className='create-fab';
+  fab.innerHTML='<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><filter id="gooFab"><feGaussianBlur in="SourceGraphic" stdDeviation="12" result="b"/><feColorMatrix in="b" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9"/></filter></defs></svg>'
+    +'<div class="create-fab__goo"><div class="goo-blob goo-blob--base"></div><div class="goo-blob goo-blob--top"></div><div class="goo-blob goo-blob--left"></div><div class="goo-blob goo-blob--right"></div></div>'
+    +'<button class="create-fab__item create-fab__item--top" onclick="__createMenuPick__(\'expense\')" aria-label="支出"><span class="create-fab__char">支</span></button>'
+    +'<button class="create-fab__item create-fab__item--left" onclick="__createMenuPick__(\'income\')" aria-label="收入"><span class="create-fab__char">收</span></button>'
+    +'<button class="create-fab__item create-fab__item--right" onclick="__createMenuPick__(\'custom\')" aria-label="自定义">'+icon('settings',22)+'</button>'
+    +'<button class="create-fab__main" onclick="toggleCreateMenu()" aria-label="记一笔">'+icon('plus',26)+'</button>';
+  document.body.appendChild(fab);
+}
+function toggleCreateMenu(){
+  var fab=document.getElementById('__create_fab__');
+  if(!fab)return;
+  if(fab.classList.contains('create-fab--open'))closeCreateMenu();
+  else openCreateMenu();
 }
 function openCreateMenu(){
-  closeCreateMenu();
-  var tmp=document.createElement('div');tmp.innerHTML=buildCreateMenuHTML();document.body.appendChild(tmp.firstElementChild);
-  var p=document.getElementById('__tab_plus__');if(p)p.classList.add('tab-plus--open');
+  var fab=document.getElementById('__create_fab__');
+  if(!fab)return;
+  fab.classList.remove('create-fab--closing');
+  fab.classList.add('create-fab--open');
 }
 function closeCreateMenu(){
-  var el=document.getElementById('__create_menu__');
-  var p=document.getElementById('__tab_plus__');if(p)p.classList.remove('tab-plus--open');
-  if(!el)return;
-  // 收起动效后再移除节点；关闭期间不拦截点击
-  el.classList.add('create-menu--closing');
-  setTimeout(function(){if(el&&el.parentNode)el.parentNode.removeChild(el)},160);
+  var fab=document.getElementById('__create_fab__');
+  if(!fab||!fab.classList.contains('create-fab--open'))return;
+  fab.classList.add('create-fab--closing');
+  fab.classList.remove('create-fab--open');
+  setTimeout(function(){fab.classList.remove('create-fab--closing')},220);
 }
 function __createMenuPick__(kind){
   closeCreateMenu();
@@ -1366,7 +1380,7 @@ function render(){
     }
     html+='<div class="stats-spacer"></div>';
   }
-  html+='<div class="tab-bar"><div class="tab-item '+(state.tab==='record'?'active':'')+'" onclick="switchTab(\'record\')" aria-label="记账">'+icon('receipt',24)+'</div><button class="tab-plus" id="__tab_plus__" onclick="openCreateMenu()" aria-label="记一笔">'+icon('plus',26)+'</button><div class="tab-item '+(state.tab==='stats'?'active':'')+'" onclick="switchTab(\'stats\')" aria-label="统计">'+icon('bar-chart-3',24)+'</div></div>';
+  html+='<div class="tab-bar"><div class="tab-item '+(state.tab==='record'?'active':'')+'" onclick="switchTab(\'record\')" aria-label="记账">'+icon('receipt',24)+'</div><div style="width:60px;flex-shrink:0"></div><div class="tab-item '+(state.tab==='stats'?'active':'')+'" onclick="switchTab(\'stats\')" aria-label="统计">'+icon('bar-chart-3',24)+'</div></div>';
 
   // Voice modal
   if(state.voiceModal){
@@ -1432,6 +1446,7 @@ function init(){
   state.txs=JSON.parse(localStorage.getItem('aiBillTxs')||'[]');
   var appEl=document.getElementById('app');
   appEl.classList.add('app--intro');
+  injectCreateFab();
   render();
   setTimeout(function(){appEl.classList.remove('app--intro')},700);
 }
@@ -1446,7 +1461,7 @@ window.openMappingModal=openMappingModal;window.closeMappingModal=closeMappingMo
 window.__mappingSetType__=__mappingSetType__;window.__hideDupMappingModal__=__hideDupMappingModal__;window.__resolveDupMapping__=__resolveDupMapping__;
 window.__openDayDetail__=__openDayDetail__;window.__openCatDetail__=__openCatDetail__;window.__closeDetailModal__=__closeDetailModal__;
 window.openDateDial=openDateDial;window.closeDateDial=closeDateDial;window.__dialPick__=__dialPick__;window.__dialConfirm__=__dialConfirm__;window.__closeAlert__=__closeAlert__;
-window.openCreateMenu=openCreateMenu;window.closeCreateMenu=closeCreateMenu;window.__createMenuPick__=__createMenuPick__;
+window.openCreateMenu=openCreateMenu;window.closeCreateMenu=closeCreateMenu;window.toggleCreateMenu=toggleCreateMenu;window.__createMenuPick__=__createMenuPick__;
 document.addEventListener('DOMContentLoaded',init);
 </script>
 </body>
