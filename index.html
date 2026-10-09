@@ -157,21 +157,26 @@ svg{display:block}
 .month-selector::-webkit-scrollbar{display:none}
 .month-chip{padding:6px 14px;border-radius:20px;background:var(--surface);border:1px solid var(--border);font-size:13px;white-space:nowrap;flex-shrink:0;color:var(--text-sub)}
 .month-chip--active{background:var(--primary);color:#fff;border-color:var(--primary)}
-/* 左上角圆形日历按钮 */
-.cal-btn{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.74);border:1px solid rgba(233,234,236,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:var(--text);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-sm);transition:transform .16s}
-.cal-btn svg{width:19px;height:19px}
-.cal-btn:active{transform:scale(.92)}
-/* 左上角三同心圆日期转盘 */
-.date-dial{position:fixed;inset:0;z-index:320}
-.date-dial__scrim{position:absolute;inset:0;background:rgba(15,16,18,.32);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);animation:fadeIn .18s ease both}
-.date-dial__inner{position:relative;width:100%;max-width:var(--max-w);height:100%;margin:0 auto}
-.date-dial__disc{position:absolute;top:0;left:0;width:min(318px,84vw);height:min(318px,84vw);transform-origin:top left;animation:dialIn .34s cubic-bezier(.22,1,.36,1) both}
-.date-dial__disc svg{width:100%;height:100%;display:block;overflow:visible}
-@keyframes dialIn{from{opacity:0;transform:scale(.55)}to{opacity:1;transform:scale(1)}}
-.date-dial__foot{position:absolute;top:calc(min(318px,84vw) - 8px);left:0;right:0;padding:0 18px;display:flex;align-items:center;justify-content:flex-end;gap:10px;animation:fadeIn .26s ease .08s both}
-.date-dial__readout{font-size:14px;font-weight:700;color:var(--text);background:rgba(255,255,255,.92);border:1px solid var(--border);border-radius:999px;padding:8px 15px;box-shadow:var(--shadow-sm)}
-.date-dial__ok{padding:10px 24px;border-radius:999px;background:var(--primary);color:#fff;font-size:14px;font-weight:700;box-shadow:0 8px 20px rgba(17,18,20,.22);transition:transform .14s}
-.date-dial__ok:active{transform:scale(.96)}
+/* 导航图标长按进入转盘时隐藏图样 */
+.tab-item svg,.tab-item .tab-item__label{transition:opacity .25s,transform .25s}
+.tab-item--dialing svg,.tab-item--dialing .tab-item__label{opacity:0;transform:scale(.3)}
+/* 水滴日期转盘：从导航按钮向上生长的水滴，底部三同心半圆环（外日·中月·内年） */
+.tear-dial{position:fixed;left:50%;bottom:calc(74px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:230px;height:300px;z-index:250;pointer-events:none}
+.tear-dial--open{pointer-events:auto}
+.tear-dial__body{position:absolute;inset:0;transform:scale(.15);opacity:0;transform-origin:50% 98%;transition:transform .5s cubic-bezier(.34,1.56,.64,1),opacity .22s ease}
+.tear-dial--open .tear-dial__body{transform:scale(1);opacity:1}
+.tear-dial__body svg{width:100%;height:100%;display:block;overflow:visible;filter:drop-shadow(0 14px 34px rgba(17,18,20,.16))}
+.tear-dial__val{position:absolute;top:64px;left:0;right:0;text-align:center;font-size:13px;font-weight:800;color:var(--text);opacity:0;transition:opacity .3s ease .18s;pointer-events:none}
+.tear-dial--open .tear-dial__val{opacity:1}
+/* 账户页 */
+.acct-page{padding:16px}
+.acct-card{background:var(--surface);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);padding:6px 18px 10px;margin-bottom:14px}
+.acct-card__title{font-size:15px;font-weight:800;display:flex;align-items:center;gap:6px;padding:14px 0 10px}
+.acct-card__title svg{width:18px;height:18px}
+.acct-row{display:flex;align-items:center;gap:12px;padding:13px 2px;border-top:1px solid var(--border);font-size:14px;font-weight:600;color:var(--text);cursor:pointer}
+.acct-row svg{width:18px;height:18px;color:var(--text-sub);flex-shrink:0}
+.acct-row__desc{font-size:11px;color:var(--text-mute);font-weight:400;margin-top:2px}
+.acct-row:active{opacity:.7}
 /* 无记录提示弹窗（右上角带 × 关闭） */
 .alert-modal{position:relative;text-align:center;padding:26px 22px 22px}
 .alert-modal__x{position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text-sub);background:var(--bg)}
@@ -761,7 +766,7 @@ function saveCustomMapping(item){var list=getCustomMappings();list.push({keyword
 function deleteCustomMapping(id){var list=getCustomMappings().filter(function(m){return m.id!==id});localStorage.setItem('aiBillMappings',JSON.stringify(list));return list}
 
 // ========== App State ==========
-var state={tab:'record',txs:[],isRecording:false,voiceModal:false,entryMode:'auto',transcript:'',parsedRecords:[],manualModal:false,configModal:false,importStatus:null,selectedMonth:new Date().toISOString().slice(0,7),recordPeriod:new Date().toISOString().slice(0,7),statDim:'month',statPeriod:new Date().toISOString().slice(0,7),toast:'',form:{type:'expense',amount:'',category:'餐饮',note:''},voiceStatus:'',voiceStatusType:'',mappingModal:false,mappingListModal:false,mappingForm:{type:'expense',keyword:'',category:'餐饮'}};
+var state={tab:'record',txs:[],isRecording:false,voiceModal:false,entryMode:'auto',transcript:'',parsedRecords:[],manualModal:false,configModal:false,importStatus:null,selectedMonth:new Date().toISOString().slice(0,7),recordPeriod:new Date().toISOString().slice(0,7),recordDay:null,statDim:'month',statPeriod:new Date().toISOString().slice(0,7),toast:'',form:{type:'expense',amount:'',category:'餐饮',note:''},voiceStatus:'',voiceStatusType:'',mappingModal:false,mappingListModal:false,mappingForm:{type:'expense',keyword:'',category:'餐饮'}};
 
 // ========== Voice Engine v4 ==========
 var recognition=null,wantRecording=false,finalTranscript='',restartTimer=null,noResultTimer=null;
@@ -1038,7 +1043,7 @@ function saveManual(){
   });
 }
 function deleteTx(id){deleteTransaction(id).then(function(){state.txs=JSON.parse(localStorage.getItem('aiBillTxs')||'[]');render();showToast('已删除')})}
-function switchTab(tab){state.tab=tab;render()}
+function switchTab(tab){state.tab=tab;closeCreateMenu();render()}
 function showSoon(){var t=document.createElement('div');t.className='soon-toast';t.textContent='敬请期待';document.body.appendChild(t);setTimeout(function(){t.remove()},1400)}
 function switchStatDim(dim){
   if(dim===state.statDim)return;
@@ -1064,13 +1069,15 @@ function showToast(msg){
 
 function getMonthExpense(ym){ym=ym||new Date().toISOString().slice(0,7);var s=0;for(var i=0;i<state.txs.length;i++)if(state.txs[i].type==='expense'&&state.txs[i].date.startsWith(ym))s+=state.txs[i].amount;return s}
 function getMonthIncome(ym){ym=ym||new Date().toISOString().slice(0,7);var s=0;for(var i=0;i<state.txs.length;i++)if(state.txs[i].type==='income'&&state.txs[i].date.startsWith(ym))s+=state.txs[i].amount;return s}
+function getDaySum(day,type){var s=0;for(var i=0;i<state.txs.length;i++)if(state.txs[i].type===type&&state.txs[i].date===day)s+=state.txs[i].amount;return s}
 // 按年月筛选后的分组（记账页只展示选中月份，不再全量累计）
 function getGroupedTxs(ym){var g={};for(var i=0;i<state.txs.length;i++){var t=state.txs[i];if(ym&&t.date.slice(0,7)!==ym)continue;if(!g[t.date])g[t.date]={date:t.date,items:[],expense:0,income:0};g[t.date].items.push(t);if(t.type==='expense')g[t.date].expense+=t.amount;else if(t.type==='income')g[t.date].income+=t.amount}return Object.keys(g).sort(function(a,b){return b.localeCompare(a)}).map(function(k){var o=g[k],p=o.date.split('-'),wk=['日','一','二','三','四','五','六'];o.dateStr=parseInt(p[1])+'月'+parseInt(p[2])+'日 星期'+wk[new Date(o.date).getDay()];return o})}
 // 记账页：年份列表（有数据的年份 ∪ 当前年）
 function getRecordYears(){var y={};y[new Date().toISOString().slice(0,4)]=true;for(var i=0;i<state.txs.length;i++)y[state.txs[i].date.slice(0,4)]=true;return Object.keys(y).sort(function(a,b){return b.localeCompare(a)})}
-// ========== 左上角三同心圆日期转盘：年 / 月 / 日（DOM 注入，打开/关闭无闪烁） ==========
+// ========== 水滴日期转盘：长按"明细"从导航按钮向上生长，底部三同心半圆环（外日·中月·内年），选择实时联动页面 ==========
 var __dialSel__=null;        // {years:[], yi:年索引, m:月(1-12), d:日索引(0=无)}
-var __scrollToDate__=null;   // 确认后需要滚动到的日期 YYYY-MM-DD
+var __scrollToDate__=null;   // 选到具体日后需要滚动到的日期 YYYY-MM-DD
+var __dialOpen__=false;
 
 // 该年月中「有记账」的日期（升序去重）
 function __dialMonthDays__(year,month){
@@ -1080,47 +1087,56 @@ function __dialMonthDays__(year,month){
   var u=[];for(var j=0;j<ds.length;j++)if(u[u.length-1]!==ds[j])u.push(ds[j]);
   return u;
 }
-// 日环取值：0=无（表示仅切换到该月），其余为该月有记录的日
+// 日环取值：0=无（展示整月），其余为该月有记录的日
 function __dialDays__(){
   if(!__dialSel__)return [0];
   var y=__dialSel__.years[__dialSel__.yi];
   return [0].concat(__dialMonthDays__(y,__dialSel__.m));
 }
-// 绘制 90° 扇环：均分 n 段，选中段填充深色
-function __dialRingPaths__(ring,n,rOut,rIn,selIdx){
+// 滚轮式半圆环：选中段固定在顶部中央（黄色高亮），其余段向两侧排开并被水滴裁剪
+function __tearRingPaths__(ring,n,rOut,rIn,selIdx){
   if(!n||n<=0)return '';
-  var step=90/n,out='';
+  var segA=Math.min(180/n,20),out='';
   for(var k=0;k<n;k++){
-    var a0=k*step*Math.PI/180,a1=(k+1)*step*Math.PI/180;
-    var x0o=(rOut*Math.sin(a0)).toFixed(2),y0o=(rOut*Math.cos(a0)).toFixed(2);
-    var x1o=(rOut*Math.sin(a1)).toFixed(2),y1o=(rOut*Math.cos(a1)).toFixed(2);
-    var x1i=(rIn*Math.sin(a1)).toFixed(2),y1i=(rIn*Math.cos(a1)).toFixed(2);
-    var x0i=(rIn*Math.sin(a0)).toFixed(2),y0i=(rIn*Math.cos(a0)).toFixed(2);
+    var c=(k-selIdx)*segA;
+    if(c<-100||c>100)continue;
+    var a0=(90-c+segA/2)*Math.PI/180,a1=(90-c-segA/2)*Math.PI/180;
+    var x0o=(115+rOut*Math.cos(a0)).toFixed(2),y0o=(292-rOut*Math.sin(a0)).toFixed(2);
+    var x1o=(115+rOut*Math.cos(a1)).toFixed(2),y1o=(292-rOut*Math.sin(a1)).toFixed(2);
+    var x1i=(115+rIn*Math.cos(a1)).toFixed(2),y1i=(292-rIn*Math.sin(a1)).toFixed(2);
+    var x0i=(115+rIn*Math.cos(a0)).toFixed(2),y0i=(292-rIn*Math.sin(a0)).toFixed(2);
     var on=(k===selIdx);
-    out+='<path d="M'+x0o+' '+y0o+' A'+rOut+' '+rOut+' 0 0 1 '+x1o+' '+y1o+' L'+x1i+' '+y1i+' A'+rIn+' '+rIn+' 0 0 0 '+x0i+' '+y0i+' Z" fill="'+(on?'#111214':'rgba(255,255,255,.9)')+'" stroke="rgba(255,255,255,.95)" stroke-width="1.4" onclick="__dialPick__('+ring+','+k+')" style="cursor:pointer"/>';
+    out+='<path d="M'+x0o+' '+y0o+' A'+rOut+' '+rOut+' 0 0 0 '+x1o+' '+y1o+' L'+x1i+' '+y1i+' A'+rIn+' '+rIn+' 0 0 1 '+x0i+' '+y0i+' Z" fill="'+(on?'#F9B552':'#FFFFFF')+'" stroke="rgba(240,241,243,.9)" stroke-width="1.2" onclick="__dialPick__('+ring+','+k+')" style="cursor:pointer"/>';
   }
   return out;
 }
-function __dialSVG__(){
+function __tearSVG__(){
   if(!__dialSel__)return '';
   var years=__dialSel__.years,days=__dialDays__();
-  return '<svg viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg">'
-    +__dialRingPaths__(0,years.length,250,214,__dialSel__.yi)
-    +__dialRingPaths__(1,12,204,168,__dialSel__.m-1)
-    +__dialRingPaths__(2,days.length,158,122,__dialSel__.d)
+  return '<svg viewBox="0 0 230 300" xmlns="http://www.w3.org/2000/svg">'
+    +'<defs><clipPath id="__tear_clip__"><path d="M115 297 C76 246 47 196 47 128 C47 82 77 52 115 52 C153 52 183 82 183 128 C183 196 154 246 115 297 Z"/></clipPath></defs>'
+    +'<path d="M115 297 C76 246 47 196 47 128 C47 82 77 52 115 52 C153 52 183 82 183 128 C183 196 154 246 115 297 Z" fill="#FFFFFF" stroke="rgba(233,234,236,.95)" stroke-width="1.5"/>'
+    +'<g clip-path="url(#__tear_clip__)">'
+    +__tearRingPaths__(2,days.length,102,84,__dialSel__.d)
+    +__tearRingPaths__(1,12,82,64,__dialSel__.m-1)
+    +__tearRingPaths__(0,years.length,62,42,__dialSel__.yi)
+    +'<text x="115" y="203" text-anchor="middle" font-size="11" font-weight="700" fill="#8A8F98">日</text>'
+    +'<text x="115" y="224" text-anchor="middle" font-size="11" font-weight="700" fill="#8A8F98">月</text>'
+    +'<text x="115" y="246" text-anchor="middle" font-size="11" font-weight="700" fill="#8A8F98">年</text>'
+    +'</g>'
     +'</svg>';
 }
 function __dialReadout__(){
   if(!__dialSel__)return '';
   var y=__dialSel__.years[__dialSel__.yi],days=__dialDays__(),d=days[__dialSel__.d];
-  return y+'年 · '+__dialSel__.m+'月 · '+(d?(d+'日'):'无');
+  return y+'年'+__dialSel__.m+'月'+(d?(' · '+d+'日'):'');
 }
-function __syncDateDial__(){
-  if(!__dialSel__)return;
-  var disc=document.getElementById('__dial_disc__');if(disc)disc.innerHTML=__dialSVG__();
-  var ro=document.getElementById('__dial_readout__');if(ro)ro.textContent=__dialReadout__();
+function __syncTearDial__(){
+  if(!__dialOpen__)return;
+  var body=document.getElementById('__tear_body__');if(body)body.innerHTML=__tearSVG__();
+  var val=document.getElementById('__tear_val__');if(val)val.textContent=__dialReadout__();
 }
-// 点击环段：ring 0=年 1=月 2=日
+// 点击环段：ring 0=年 1=月 2=日；选择后实时联动页面数据
 function __dialPick__(ring,k){
   if(!__dialSel__)return;
   if(ring===0){__dialSel__.yi=k;__dialSel__.d=0}
@@ -1128,43 +1144,90 @@ function __dialPick__(ring,k){
   else{__dialSel__.d=k}
   var days=__dialDays__();
   if(__dialSel__.d>=days.length)__dialSel__.d=0;
-  __syncDateDial__();
+  __syncTearDial__();
+  __applyDialSelection__();
 }
-function buildDateDialHTML(){
-  return '<div id="__date_dial__" class="date-dial"><div class="date-dial__scrim" onclick="closeDateDial()"></div><div class="date-dial__inner"><div class="date-dial__disc" id="__dial_disc__">'+__dialSVG__()+'</div><div class="date-dial__foot"><span class="date-dial__readout" id="__dial_readout__">'+__dialReadout__()+'</span><button class="date-dial__ok" onclick="__dialConfirm__()">确定</button></div></div></div>';
+// 把转盘选择应用到页面：年+月→recordPeriod；日=无→整月(1号在最底倒序)；日有值→仅该日(并滚动定位)
+function __applyDialSelection__(){
+  if(!__dialSel__)return;
+  var y=__dialSel__.years[__dialSel__.yi],m=__dialSel__.m,days=__dialDays__(),d=days[__dialSel__.d];
+  var ym=y+'-'+String(m).padStart(2,'0');
+  state.recordPeriod=ym;
+  state.recordDay=d?(ym+'-'+String(d).padStart(2,'0')):null;
+  if(state.recordDay)__scrollToDate__=state.recordDay;
+  if(state.tab!=='record')switchTab('record');else render();
 }
-function openDateDial(){
+// 滚轮/触摸滚动步进某环：dir 1=下一段 -1=上一段
+function __dialStep__(ring,dir){
+  if(!__dialSel__)return;
+  var n=ring===0?__dialSel__.years.length:(ring===1?12:__dialDays__().length);
+  if(!n)return;
+  var cur=ring===0?__dialSel__.yi:(ring===1?__dialSel__.m-1:__dialSel__.d);
+  var k=(cur+dir%n+n)%n;
+  __dialPick__(ring,k);
+}
+// 指针位置→所在环（距半圆中心 (115,292) 的半径）
+function __dialRingAt__(clientX,clientY){
+  var body=document.getElementById('__tear_body__');if(!body)return null;
+  var svg=body.querySelector('svg');if(!svg)return null;
+  var r=svg.getBoundingClientRect();
+  var sx=(clientX-r.left)/r.width*230,sy=(clientY-r.top)/r.height*300;
+  var dist=Math.sqrt((sx-115)*(sx-115)+(292-sy)*(292-sy));
+  if(sy>292)return null;
+  if(dist>=83&&dist<=104)return 2;
+  if(dist>=63&&dist<=83)return 1;
+  if(dist>=38&&dist<=63)return 0;
+  return null;
+}
+function openTearDial(){
+  if(__dialOpen__){closeTearDial();return}
   var cur=state.recordPeriod||new Date().toISOString().slice(0,7);
   var years=getRecordYears(),yi=years.indexOf(cur.slice(0,4));
   if(yi<0)yi=0;
-  __dialSel__={years:years,yi:yi,m:parseInt(cur.slice(5,7),10),d:0};
-  closeDateDial();
-  var tmp=document.createElement('div');tmp.innerHTML=buildDateDialHTML();document.body.appendChild(tmp.firstElementChild);
+  var days=[0].concat(__dialMonthDays__(years[yi],parseInt(cur.slice(5,7),10)));
+  var di=0;
+  if(state.recordDay&&state.recordDay.slice(0,7)===cur)di=days.indexOf(parseInt(state.recordDay.slice(8,10),10));
+  if(di<0)di=0;
+  __dialSel__={years:years,yi:yi,m:parseInt(cur.slice(5,7),10),d:di};
+  var old=document.getElementById('__tear_dial__');if(old&&old.parentNode)old.parentNode.removeChild(old);
+  var tmp=document.createElement('div');
+  tmp.innerHTML='<div id="__tear_dial__" class="tear-dial tear-dial--open"><div class="tear-dial__body" id="__tear_body__">'+__tearSVG__()+'</div><div class="tear-dial__val" id="__tear_val__">'+__dialReadout__()+'</div></div>';
+  var dialEl=tmp.firstElementChild;
+  // 水滴尖端对齐"明细"按钮中心
+  var tabEl=document.querySelector('.tab-item[aria-label="明细"]');
+  var lx=window.innerWidth*0.2;
+  if(tabEl){var tr=tabEl.getBoundingClientRect();lx=tr.left+tr.width/2}
+  dialEl.style.left=lx+'px';
+  document.body.appendChild(dialEl);
+  // 滚轮 / 触摸上下滑动 = 滚动选择所在环
+  dialEl.addEventListener('wheel',function(e){e.preventDefault();var ring=__dialRingAt__(e.clientX,e.clientY);if(ring!==null)__dialStep__(ring,e.deltaY>0?1:-1)},{passive:false});
+  var ty0=0,tring=null;
+  dialEl.addEventListener('touchstart',function(e){var t=e.touches[0];ty0=t.clientY;tring=__dialRingAt__(t.clientX,t.clientY)},{passive:true});
+  dialEl.addEventListener('touchmove',function(e){if(tring===null)return;e.preventDefault();var t=e.touches[0];var dy=ty0-t.clientY;if(Math.abs(dy)>=22){__dialStep__(tring,dy>0?1:-1);ty0=t.clientY}},{passive:false});
+  __dialOpen__=true;
+  if(tabEl)tabEl.classList.add('tab-item--dialing');
 }
-function closeDateDial(){
-  var el=document.getElementById('__date_dial__');if(el&&el.parentNode)el.parentNode.removeChild(el);
-  __dialSel__=null;
+function closeTearDial(){
+  if(!__dialOpen__)return;
+  __dialOpen__=false;__dialSel__=null;
+  var el=document.getElementById('__tear_dial__');
+  if(el){el.classList.remove('tear-dial--open');setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el)},420)}
+  var tab=document.querySelector('.tab-item[aria-label="明细"]');if(tab)tab.classList.remove('tab-item--dialing');
 }
-// 确认：无具体日→切到该月；有具体日→切月并滚动到该日；该月无数据→无记录提示
-function __dialConfirm__(){
-  if(!__dialSel__)return;
-  var y=__dialSel__.years[__dialSel__.yi],m=__dialSel__.m,days=__dialDays__(),d=days[__dialSel__.d];
-  var ym=y+'-'+String(m).padStart(2,'0'),has=false;
-  for(var i=0;i<state.txs.length;i++)if(state.txs[i].date.slice(0,7)===ym){has=true;break}
-  if(!has){closeDateDial();__showNoRecordAlert__(y+'年'+m+'月');return}
-  var targetDay=d?(ym+'-'+String(d).padStart(2,'0')):null;
-  closeDateDial();
-  state.recordPeriod=ym;
-  if(targetDay)__scrollToDate__=targetDay;
-  render();
-}
-// 无记录提示弹窗（右上角 × 关闭）
-function __showNoRecordAlert__(label){
-  var old=document.getElementById('__alert_modal__');if(old&&old.parentNode)old.parentNode.removeChild(old);
-  var html='<div id="__alert_modal__" class="modal-overlay" style="z-index:10001" onclick="if(event.target===this)__closeAlert__()"><div class="modal alert-modal"><button class="alert-modal__x" onclick="__closeAlert__()" aria-label="关闭">'+icon('x',16)+'</button><div class="alert-modal__icon">'+icon('inbox',26)+'</div><div class="alert-modal__title">该日期无记录</div><div class="alert-modal__msg">'+label+'暂无任何记账记录</div><div class="btn-row"><button class="btn btn--primary" style="flex:1" onclick="__closeAlert__()">知道了</button></div></div></div>';
-  var tmp=document.createElement('div');tmp.innerHTML=html;document.body.appendChild(tmp.firstElementChild);
-}
-function __closeAlert__(){var el=document.getElementById('__alert_modal__');if(el&&el.parentNode)el.parentNode.removeChild(el);}
+// 导航栏长按（450ms）触发；短按仍为普通切换；长按抬起后的 click 被吞掉防止误切换
+// 事件委托到 document：render 重建导航 DOM 后依然有效
+var __holdSuppress__=0,__holdTimer__=null;
+document.addEventListener('click',function(e){if(Date.now()<__holdSuppress__){e.stopPropagation();e.preventDefault()}},true);
+function __holdCancel__(){if(__holdTimer__){clearTimeout(__holdTimer__);__holdTimer__=null}}
+document.addEventListener('pointerdown',function(e){
+  var el=e.target.closest?e.target.closest('.tab-item[aria-label="明细"],.tab-item[aria-label="统计"]'):null;
+  __holdCancel__();
+  if(!el)return;
+  var tab=el.getAttribute('aria-label')==='明细'?'record':'stats';
+  __holdTimer__=setTimeout(function(){__holdTimer__=null;__holdSuppress__=Date.now()+600;if(tab==='record')openTearDial();else showToast('统计转盘敬请期待')},450);
+});
+document.addEventListener('pointerup',__holdCancel__);
+document.addEventListener('pointercancel',__holdCancel__);
 // ========== 底部液态变形加号按钮：支出 / 收入 / 自定义（固定注入 + 变形动效，无全屏遮罩） ==========
 function injectCreateFab(){
   if(document.getElementById('__create_fab__'))return;
@@ -1324,20 +1387,19 @@ function __openCatDetail__(cat,type){
 
 function render(){
   var app=$('#app'),html='';
-  // Top bar（记录页：左上角圆形日历按钮；统计页：顶部日期文字）
-  var topLeftHTML=(state.tab==='record')
-    ?'<button class="cal-btn" onclick="openDateDial()" title="选择日期" aria-label="选择日期">'+icon('calendar',19)+'</button>'
-    :'<div><div class="top-bar__title">'+icon('wallet',22)+' 记账小管家</div><div class="top-bar__date">'+todayStr()+'</div></div>';
-  var topBarHTML='<div class="top-bar"><div class="top-bar__row">'+topLeftHTML+'<div class="top-bar__btns"><button class="top-bar__btn" onclick="exportBackup()">'+icon('download',17)+'导出</button><button class="top-bar__btn top-bar__btn--cfg" onclick="openConfigModal()">'+icon('settings',17)+'配置</button></div></div></div>';
+  // Top bar（标题+日期；导出/配置已移至账户页）
+  var topBarHTML='<div class="top-bar"><div class="top-bar__row"><div><div class="top-bar__title">'+icon('wallet',22)+' 记账小管家</div><div class="top-bar__date">'+todayStr()+'</div></div></div></div>';
   if(state.tab==='record'){
     var ym=state.recordPeriod||new Date().toISOString().slice(0,7);
     state.recordPeriod=ym;
+    var day=state.recordDay;
     var curYm=new Date().toISOString().slice(0,7);
-    var mLbl=(ym===curYm)?'本月':(parseInt(ym.slice(5,7),10)+'月');
-    var exp=getMonthExpense(ym),inc=getMonthIncome(ym),bal=Math.round((inc-exp)*100)/100;
+    var mLbl=day?(parseInt(day.slice(5,7),10)+'月'+parseInt(day.slice(8,10),10)+'日'):((ym===curYm)?'本月':(parseInt(ym.slice(5,7),10)+'月'));
+    var exp=day?getDaySum(day,'expense'):getMonthExpense(ym),inc=day?getDaySum(day,'income'):getMonthIncome(ym),bal=Math.round((inc-exp)*100)/100;
     html+='<div class="page-record">'+topBarHTML;
     html+='<div class="summary-card reveal"><div class="summary-item"><div class="summary-item__num summary-item__num--expense">¥'+exp.toFixed(2)+'</div><div class="summary-item__label">'+mLbl+'支出</div></div><div class="summary-item"><div class="summary-item__num '+(bal>=0?'summary-item__num--income':'summary-item__num--expense')+'">¥'+bal.toFixed(2)+'</div><div class="summary-item__label">'+mLbl+'结余</div></div><div class="summary-item"><div class="summary-item__num summary-item__num--income">¥'+inc.toFixed(2)+'</div><div class="summary-item__label">'+mLbl+'收入</div></div></div>';
     var groups=getGroupedTxs(ym);
+    if(day)groups=groups.filter(function(g){return g.date===day});
     html+='<div class="tx-scroll"><div class="tx-list">';
     if(groups.length){var d=0;
       for(var gi=0;gi<groups.length;gi++){var g=groups[gi];d+=0.05;
@@ -1397,12 +1459,22 @@ function render(){
     }
     html+='<div class="stats-spacer"></div>';
   }
+  if(state.tab==='account'){
+    html+=topBarHTML;
+    html+='<div class="acct-page">'
+      +'<div class="acct-card"><div class="acct-card__title">'+icon('user',18)+' 账户</div>'
+      +'<div class="acct-row" onclick="exportBackup()">'+icon('download',18)+'<div><div>导出数据</div><div class="acct-row__desc">备份全部记账记录为 JSON 文件</div></div></div>'
+      +'<div class="acct-row" onclick="openConfigModal()">'+icon('settings',18)+'<div><div>配置</div><div class="acct-row__desc">AI 接口 / 导入备份 / 自定义映射</div></div></div>'
+      +'</div>'
+      +'<div class="acct-card"><div class="acct-card__title">'+icon('piggy-bank',18)+' 储蓄</div><div class="acct-row" onclick="showSoon()">'+icon('sparkles',18)+'<div><div>储蓄功能</div><div class="acct-row__desc">敬请期待</div></div></div></div>'
+      +'</div>';
+  }
   html+='<div class="tab-bar">'
     +'<div class="tab-item '+(state.tab==='record'?'active':'')+'" onclick="switchTab(\'record\')" aria-label="明细">'+icon('receipt',21)+'<span class="tab-item__label">明细</span></div>'
     +'<div class="tab-item '+(state.tab==='stats'?'active':'')+'" onclick="switchTab(\'stats\')" aria-label="统计">'+icon('bar-chart-3',21)+'<span class="tab-item__label">统计</span></div>'
     +'<div class="tab-item tab-item--center" aria-hidden="true"></div>'
     +'<div class="tab-item" onclick="showSoon()" aria-label="储蓄">'+icon('piggy-bank',21)+'<span class="tab-item__label">储蓄</span></div>'
-    +'<div class="tab-item" onclick="showSoon()" aria-label="账户">'+icon('user',21)+'<span class="tab-item__label">账户</span></div>'
+    +'<div class="tab-item '+(state.tab==='account'?'active':'')+'" onclick="switchTab(\'account\')" aria-label="账户">'+icon('user',21)+'<span class="tab-item__label">账户</span></div>'
     +'</div>';
 
   // Voice modal
@@ -1452,12 +1524,14 @@ function render(){
 
   // toast 由 showToast 直接以 DOM 注入显示，不参与整体 render（防闪烁）
   app.innerHTML=html;
-  // 日期转盘确认后：滚动到指定日期所在分组
+  // 水滴转盘选择具体日后：滚动到指定日期所在分组
   if(state.tab==='record'&&__scrollToDate__){
     var sd=__scrollToDate__;__scrollToDate__=null;
     var sc=document.querySelector('.tx-scroll'),el=document.querySelector('.tx-date-group[data-date="'+sd+'"]');
     if(sc&&el)sc.scrollTop=Math.max(0,el.offsetTop-8);
   }
+  // 转盘开启中：render 重建导航后保持图标隐藏
+  if(__dialOpen__){var dt=document.querySelector('.tab-item[aria-label="明细"]');if(dt)dt.classList.add('tab-item--dialing')}
 }
 
 function init(){
@@ -1483,7 +1557,7 @@ window.exportBackup=exportBackup;window.openConfigModal=openConfigModal;window.c
 window.openMappingModal=openMappingModal;window.closeMappingModal=closeMappingModal;window.openMappingListModal=openMappingListModal;window.closeMappingListModal=closeMappingListModal;window.saveMapping=saveMapping;window.deleteMapping=deleteMapping;
 window.__mappingSetType__=__mappingSetType__;window.__hideDupMappingModal__=__hideDupMappingModal__;window.__resolveDupMapping__=__resolveDupMapping__;
 window.__openDayDetail__=__openDayDetail__;window.__openCatDetail__=__openCatDetail__;window.__closeDetailModal__=__closeDetailModal__;
-window.openDateDial=openDateDial;window.closeDateDial=closeDateDial;window.__dialPick__=__dialPick__;window.__dialConfirm__=__dialConfirm__;window.__closeAlert__=__closeAlert__;
+window.openTearDial=openTearDial;window.closeTearDial=closeTearDial;window.__dialPick__=__dialPick__;
 window.openCreateMenu=openCreateMenu;window.closeCreateMenu=closeCreateMenu;window.toggleCreateMenu=toggleCreateMenu;window.__createMenuPick__=__createMenuPick__;
 document.addEventListener('DOMContentLoaded',init);
 </script>
