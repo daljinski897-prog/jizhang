@@ -61,10 +61,10 @@ svg{display:block}
 .create-fab{position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:260;width:200px;height:150px;transform:translateX(-50%);pointer-events:none}
 .create-fab__goo{position:absolute;inset:0;filter:url(#gooFab) drop-shadow(0 10px 26px rgba(242,153,61,.35))}
 /* goo 层纯色圆：只负责黏液轮廓与拉丝（渐变会被滤镜模糊平均化，故不放在这层） */
-.goo-blob{position:absolute;left:74px;top:90px;width:52px;height:52px;border-radius:50%;background:#F7A94B}
+.goo-blob{position:absolute;left:74px;top:90px;width:52px;height:52px;border-radius:50%;background:#FBC169}
 /* 清晰渐变圆盘层（不过滤镜）：中心深橙、边缘浅黄的太阳感，与 blob 同步运动 */
 .create-fab__discs{position:absolute;inset:0;pointer-events:none}
-.goo-disc{position:absolute;left:76px;top:92px;width:48px;height:48px;border-radius:50%;background:radial-gradient(circle at 50% 42%,#E8790F 0%,#F49D38 50%,#FFD98F 100%)}
+.goo-disc{position:absolute;left:76px;top:92px;width:48px;height:48px;border-radius:50%;background:radial-gradient(circle at 50% 42%,#F5A73C 0%,#FBC169 52%,#FFE3AC 100%)}
 .goo-blob--base{left:70px;top:86px;width:60px;height:60px}
 .goo-disc--base{left:72px;top:88px;width:56px;height:56px}
 .goo-blob,.goo-disc,.create-fab__item{transition:left .6s cubic-bezier(.55,.1,.3,1.4),top .6s cubic-bezier(.55,.1,.3,1.4),transform .6s cubic-bezier(.55,.1,.3,1.4),opacity .3s ease}
