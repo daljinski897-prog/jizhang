@@ -47,31 +47,43 @@ svg{display:block}
 .summary-item__num--income{color:var(--success)}
 .summary-item__num--neutral{color:var(--text)}
 .summary-item__label{font-size:11px;color:var(--text-sub);margin-top:4px}
-.tab-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:var(--max-w);height:var(--nav-h);background:transparent;border:none;display:flex;align-items:center;z-index:200;padding-bottom:env(safe-area-inset-bottom,0px)}
-.tab-item{flex:1;display:flex;align-items:center;justify-content:center;color:rgba(15,16,18,.40);transition:color .25s,transform .25s}
-.tab-item svg{width:24px;height:24px;stroke-width:1.8}
-.tab-item.active{color:var(--text);transform:translateY(-1px)}
+/* 底部液态玻璃胶囊导航栏 */
+.tab-bar{position:fixed;bottom:calc(10px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:calc(var(--max-w) - 32px);height:64px;border-radius:999px;background:rgba(255,255,255,.6);backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);border:1px solid rgba(255,255,255,.8);box-shadow:0 12px 32px rgba(17,18,20,.12),inset 0 1px 0 rgba(255,255,255,.9);display:flex;align-items:stretch;z-index:200;padding:0 8px}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:rgba(15,16,18,.38);transition:color .25s}
+.tab-item svg{width:21px;height:21px;stroke-width:1.7}
+.tab-item__label{font-size:10px;font-weight:600;line-height:1;letter-spacing:.02em}
+.tab-item.active{color:var(--text)}
 .tab-item.active svg{stroke-width:2.2}
+.tab-item.active .tab-item__label{font-weight:800}
+.tab-item--center{flex:0 0 72px}
+.soon-toast{position:fixed;top:18%;left:50%;transform:translateX(-50%);background:rgba(17,18,20,.85);color:#fff;padding:9px 20px;border-radius:999px;font-size:13px;font-weight:600;z-index:400;animation:fadeIn .2s ease;backdrop-filter:blur(8px)}
 /* 底部液态变形加号按钮（FAB）：径向扇形展开（上/左/右三个圆），SVG goo 滤镜产生水滴拉伸的黏稠感，无全屏遮罩 */
-.create-fab{position:fixed;left:50%;bottom:calc(var(--nav-h) + 6px + env(safe-area-inset-bottom,0px));z-index:260;width:200px;height:150px;transform:translateX(-50%);pointer-events:none}
-.create-fab__goo{position:absolute;inset:0;filter:url(#gooFab) drop-shadow(0 10px 26px rgba(17,18,20,.16))}
-/* 白色圆 blob：收起时全部叠在主圆上，展开时沿径向甩出，goo 滤镜形成液态拉丝 */
-.goo-blob{position:absolute;left:74px;top:90px;width:52px;height:52px;border-radius:50%;background:#fff}
-.goo-blob,.create-fab__item{transition:left .6s cubic-bezier(.55,.1,.3,1.4),top .6s cubic-bezier(.55,.1,.3,1.4),transform .6s cubic-bezier(.55,.1,.3,1.4),opacity .3s ease}
-.create-fab--open .goo-blob--top,.create-fab--open .create-fab__item--top{left:74px;top:16px}
-.create-fab--open .goo-blob--left,.create-fab--open .create-fab__item--left{left:5px;top:65px}
-.create-fab--open .goo-blob--right,.create-fab--open .create-fab__item--right{left:144px;top:65px}
-.create-fab--open .goo-blob--top,.create-fab--open .create-fab__item--top{transition-delay:0s}
-.create-fab--open .goo-blob--left,.create-fab--open .create-fab__item--left{transition-delay:.05s}
-.create-fab--open .goo-blob--right,.create-fab--open .create-fab__item--right{transition-delay:.1s}
-.create-fab--closing .goo-blob,.create-fab--closing .create-fab__item{transition-delay:0s;transition-duration:.3s,.3s,.3s,.15s}
-.create-fab__main{position:absolute;left:74px;top:90px;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text);pointer-events:auto}
-.create-fab__main svg{width:26px;height:26px;transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
+.create-fab{position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:260;width:200px;height:150px;transform:translateX(-50%);pointer-events:none}
+.create-fab__goo{position:absolute;inset:0;filter:url(#gooFab) drop-shadow(0 10px 26px rgba(242,153,61,.35))}
+/* goo 层纯色圆：只负责黏液轮廓与拉丝（渐变会被滤镜模糊平均化，故不放在这层） */
+.goo-blob{position:absolute;left:74px;top:90px;width:52px;height:52px;border-radius:50%;background:#F7A94B}
+/* 清晰渐变圆盘层（不过滤镜）：中心深橙、边缘浅黄的太阳感，与 blob 同步运动 */
+.create-fab__discs{position:absolute;inset:0;pointer-events:none}
+.goo-disc{position:absolute;left:76px;top:92px;width:48px;height:48px;border-radius:50%;background:radial-gradient(circle at 50% 42%,#E8790F 0%,#F49D38 50%,#FFD98F 100%)}
+.goo-blob--base{left:70px;top:86px;width:60px;height:60px}
+.goo-disc--base{left:72px;top:88px;width:56px;height:56px}
+.goo-blob,.goo-disc,.create-fab__item{transition:left .6s cubic-bezier(.55,.1,.3,1.4),top .6s cubic-bezier(.55,.1,.3,1.4),transform .6s cubic-bezier(.55,.1,.3,1.4),opacity .3s ease}
+.create-fab--open .goo-blob--top,.create-fab--open .create-fab__item--top{left:74px;top:2px}
+.create-fab--open .goo-disc--top{left:76px;top:4px}
+.create-fab--open .goo-blob--left,.create-fab--open .create-fab__item--left{left:5px;top:34px}
+.create-fab--open .goo-disc--left{left:7px;top:36px}
+.create-fab--open .goo-blob--right,.create-fab--open .create-fab__item--right{left:144px;top:34px}
+.create-fab--open .goo-disc--right{left:146px;top:36px}
+.create-fab--open .goo-blob--top,.create-fab--open .goo-disc--top,.create-fab--open .create-fab__item--top{transition-delay:0s}
+.create-fab--open .goo-blob--left,.create-fab--open .goo-disc--left,.create-fab--open .create-fab__item--left{transition-delay:.05s}
+.create-fab--open .goo-blob--right,.create-fab--open .goo-disc--right,.create-fab--open .create-fab__item--right{transition-delay:.1s}
+.create-fab--closing .goo-blob,.create-fab--closing .goo-disc,.create-fab--closing .create-fab__item{transition-delay:0s;transition-duration:.3s,.3s,.3s,.15s}
+.create-fab__main{position:absolute;left:70px;top:86px;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;pointer-events:auto}
+.create-fab__main svg{width:28px;height:28px;stroke-width:2.4;transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
 .create-fab--open .create-fab__main svg{transform:rotate(45deg)}
-/* 子按钮（图标层，白色圆由 goo 层提供）：与对应 blob 同步径向弹出 */
-.create-fab__item{position:absolute;left:74px;top:90px;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text);opacity:0;transform:scale(.2);pointer-events:none}
-.create-fab__item svg{width:22px;height:22px}
-.create-fab__char{font-size:17px;font-weight:700;line-height:1}
+/* 子按钮（图标层，黄色渐变圆由 goo 层提供）：与对应 blob 同步径向弹出 */
+.create-fab__item{position:absolute;left:74px;top:90px;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;opacity:0;transform:scale(.2);pointer-events:none}
+.create-fab__item svg{width:22px;height:22px;stroke-width:2.1}
 .create-fab__item:active{opacity:.8}
 .create-fab--open .create-fab__item{opacity:1;transform:scale(1);pointer-events:auto}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s ease;overscroll-behavior:contain}
@@ -305,6 +317,9 @@ var ICONS={
   settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
   calendar:'<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
   'arrow-up-right':'<path d="M7 17L17 7"/><path d="M8 7h9v9"/>',
+  user:'<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  'piggy-bank':'<path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2V5z"/><path d="M2 9v1c0 1.1.9 2 2 2h1"/><path d="M16 11h.01"/>',
+  pencil:'<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/>',
 };
 function icon(name,size){size=size||20;var inner=ICONS[name]||ICONS['package'];return '<svg xmlns="http://www.w3.org/2000/svg" width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">'+inner+'</svg>'}
 
@@ -1024,6 +1039,7 @@ function saveManual(){
 }
 function deleteTx(id){deleteTransaction(id).then(function(){state.txs=JSON.parse(localStorage.getItem('aiBillTxs')||'[]');render();showToast('已删除')})}
 function switchTab(tab){state.tab=tab;render()}
+function showSoon(){var t=document.createElement('div');t.className='soon-toast';t.textContent='敬请期待';document.body.appendChild(t);setTimeout(function(){t.remove()},1400)}
 function switchStatDim(dim){
   if(dim===state.statDim)return;
   state.statDim=dim;
@@ -1157,9 +1173,10 @@ function injectCreateFab(){
   fab.className='create-fab';
   fab.innerHTML='<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><filter id="gooFab"><feGaussianBlur in="SourceGraphic" stdDeviation="12" result="b"/><feColorMatrix in="b" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9"/></filter></defs></svg>'
     +'<div class="create-fab__goo"><div class="goo-blob goo-blob--base"></div><div class="goo-blob goo-blob--top"></div><div class="goo-blob goo-blob--left"></div><div class="goo-blob goo-blob--right"></div></div>'
-    +'<button class="create-fab__item create-fab__item--top" onclick="__createMenuPick__(\'expense\')" aria-label="支出"><span class="create-fab__char">支</span></button>'
-    +'<button class="create-fab__item create-fab__item--left" onclick="__createMenuPick__(\'income\')" aria-label="收入"><span class="create-fab__char">收</span></button>'
-    +'<button class="create-fab__item create-fab__item--right" onclick="__createMenuPick__(\'custom\')" aria-label="自定义">'+icon('settings',22)+'</button>'
+    +'<div class="create-fab__discs"><div class="goo-disc goo-disc--base"></div><div class="goo-disc goo-disc--top"></div><div class="goo-disc goo-disc--left"></div><div class="goo-disc goo-disc--right"></div></div>'
+    +'<button class="create-fab__item create-fab__item--top" onclick="__createMenuPick__(\'expense\')" aria-label="支出">'+icon('wallet',22)+'</button>'
+    +'<button class="create-fab__item create-fab__item--left" onclick="__createMenuPick__(\'income\')" aria-label="收入">'+icon('banknote',22)+'</button>'
+    +'<button class="create-fab__item create-fab__item--right" onclick="__createMenuPick__(\'custom\')" aria-label="自定义">'+icon('pencil',22)+'</button>'
     +'<button class="create-fab__main" onclick="toggleCreateMenu()" aria-label="记一笔">'+icon('plus',26)+'</button>';
   document.body.appendChild(fab);
 }
@@ -1380,7 +1397,13 @@ function render(){
     }
     html+='<div class="stats-spacer"></div>';
   }
-  html+='<div class="tab-bar"><div class="tab-item '+(state.tab==='record'?'active':'')+'" onclick="switchTab(\'record\')" aria-label="记账">'+icon('receipt',24)+'</div><div style="width:60px;flex-shrink:0"></div><div class="tab-item '+(state.tab==='stats'?'active':'')+'" onclick="switchTab(\'stats\')" aria-label="统计">'+icon('bar-chart-3',24)+'</div></div>';
+  html+='<div class="tab-bar">'
+    +'<div class="tab-item '+(state.tab==='record'?'active':'')+'" onclick="switchTab(\'record\')" aria-label="明细">'+icon('receipt',21)+'<span class="tab-item__label">明细</span></div>'
+    +'<div class="tab-item '+(state.tab==='stats'?'active':'')+'" onclick="switchTab(\'stats\')" aria-label="统计">'+icon('bar-chart-3',21)+'<span class="tab-item__label">统计</span></div>'
+    +'<div class="tab-item tab-item--center" aria-hidden="true"></div>'
+    +'<div class="tab-item" onclick="showSoon()" aria-label="储蓄">'+icon('piggy-bank',21)+'<span class="tab-item__label">储蓄</span></div>'
+    +'<div class="tab-item" onclick="showSoon()" aria-label="账户">'+icon('user',21)+'<span class="tab-item__label">账户</span></div>'
+    +'</div>';
 
   // Voice modal
   if(state.voiceModal){
