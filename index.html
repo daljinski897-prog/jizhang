@@ -157,17 +157,12 @@ svg{display:block}
 .month-selector::-webkit-scrollbar{display:none}
 .month-chip{padding:6px 14px;border-radius:20px;background:var(--surface);border:1px solid var(--border);font-size:13px;white-space:nowrap;flex-shrink:0;color:var(--text-sub)}
 .month-chip--active{background:var(--primary);color:#fff;border-color:var(--primary)}
-/* 导航图标长按进入转盘时隐藏图样 */
-.tab-item svg,.tab-item .tab-item__label{transition:opacity .25s,transform .25s}
-.tab-item--dialing svg,.tab-item--dialing .tab-item__label{opacity:0;transform:scale(.3)}
-/* 水滴日期转盘：从导航按钮向上生长的水滴，底部三同心半圆环（外日·中月·内年） */
-.tear-dial{position:fixed;left:50%;bottom:calc(74px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:230px;height:300px;z-index:250;pointer-events:none}
+/* 水滴日期转盘：从导航按钮向上生长的水滴，最宽处三同心滚轮环（外日·中月·内年） */
+.tear-dial{position:fixed;bottom:calc(74px + env(safe-area-inset-bottom,0px));width:280px;height:340px;z-index:250;pointer-events:none}
 .tear-dial--open{pointer-events:auto}
 .tear-dial__body{position:absolute;inset:0;transform:scale(.15);opacity:0;transform-origin:50% 98%;transition:transform .5s cubic-bezier(.34,1.56,.64,1),opacity .22s ease}
 .tear-dial--open .tear-dial__body{transform:scale(1);opacity:1}
 .tear-dial__body svg{width:100%;height:100%;display:block;overflow:visible;filter:drop-shadow(0 14px 34px rgba(17,18,20,.16))}
-.tear-dial__val{position:absolute;top:64px;left:0;right:0;text-align:center;font-size:13px;font-weight:800;color:var(--text);opacity:0;transition:opacity .3s ease .18s;pointer-events:none}
-.tear-dial--open .tear-dial__val{opacity:1}
 /* 账户页 */
 .acct-page{padding:16px}
 .acct-card{background:var(--surface);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);padding:6px 18px 10px;margin-bottom:14px}
@@ -1079,64 +1074,75 @@ var __dialSel__=null;        // {years:[], yi:年索引, m:月(1-12), d:日索�
 var __scrollToDate__=null;   // 选到具体日后需要滚动到的日期 YYYY-MM-DD
 var __dialOpen__=false;
 
-// 该年月中「有记账」的日期（升序去重）
-function __dialMonthDays__(year,month){
-  var p=year+'-'+String(month).padStart(2,'0'),ds=[];
-  for(var i=0;i<state.txs.length;i++){var d=state.txs[i].date;if(d.slice(0,7)===p)ds.push(parseInt(d.slice(8,10),10))}
-  ds.sort(function(a,b){return a-b});
-  var u=[];for(var j=0;j<ds.length;j++)if(u[u.length-1]!==ds[j])u.push(ds[j]);
-  return u;
-}
-// 日环取值：0=无（展示整月），其余为该月有记录的日
+// 日环取值：0=无（展示整月），1..N=该月全部天（N 由年月决定，闰年二月自动 29）
 function __dialDays__(){
   if(!__dialSel__)return [0];
-  var y=__dialSel__.years[__dialSel__.yi];
-  return [0].concat(__dialMonthDays__(y,__dialSel__.m));
+  var y=parseInt(__dialSel__.years[__dialSel__.yi],10),n=new Date(y,__dialSel__.m,0).getDate();
+  var arr=[0];for(var i=1;i<=n;i++)arr.push(i);
+  return arr;
 }
-// 滚轮式半圆环：选中段固定在顶部中央（黄色高亮），其余段向两侧排开并被水滴裁剪
-function __tearRingPaths__(ring,n,rOut,rIn,selIdx){
+// 环段标签：年=2026 等，月=1-12，日=无/1..N
+function __tearLabel__(ring,k){
+  if(ring===0)return __dialSel__.years[k];
+  if(ring===1)return String(k+1);
+  var days=__dialDays__();return k===0?'无':String(days[k]);
+}
+// 滚轮式半圆环：选中段固定在顶部中央（黑底白字），只渲染选中±2 段窗口，off 为平滑滚动偏移
+var TEAR_CX=150,TEAR_CY=158;
+var TEAR_R=[[26,48],[50,70],[72,92]]; // [年,月,日] 内外半径（日环最外，位于水滴最宽处）
+function __tearSegA__(ring){return ring===0?40:20}
+function __tearRingPaths__(ring,n,off){
   if(!n||n<=0)return '';
-  var segA=Math.min(180/n,20),out='';
+  var segA=__tearSegA__(ring),r=TEAR_R[ring],out='';
   for(var k=0;k<n;k++){
-    var c=(k-selIdx)*segA;
-    if(c<-100||c>100)continue;
+    var c=(k-off)*segA;
+    if(c<-52||c>52)continue;
     var a0=(90-c+segA/2)*Math.PI/180,a1=(90-c-segA/2)*Math.PI/180;
-    var x0o=(115+rOut*Math.cos(a0)).toFixed(2),y0o=(292-rOut*Math.sin(a0)).toFixed(2);
-    var x1o=(115+rOut*Math.cos(a1)).toFixed(2),y1o=(292-rOut*Math.sin(a1)).toFixed(2);
-    var x1i=(115+rIn*Math.cos(a1)).toFixed(2),y1i=(292-rIn*Math.sin(a1)).toFixed(2);
-    var x0i=(115+rIn*Math.cos(a0)).toFixed(2),y0i=(292-rIn*Math.sin(a0)).toFixed(2);
-    var on=(k===selIdx);
-    out+='<path d="M'+x0o+' '+y0o+' A'+rOut+' '+rOut+' 0 0 0 '+x1o+' '+y1o+' L'+x1i+' '+y1i+' A'+rIn+' '+rIn+' 0 0 1 '+x0i+' '+y0i+' Z" fill="'+(on?'#F9B552':'#FFFFFF')+'" stroke="rgba(240,241,243,.9)" stroke-width="1.2" onclick="__dialPick__('+ring+','+k+')" style="cursor:pointer"/>';
+    var x0o=(TEAR_CX+r[1]*Math.cos(a0)).toFixed(2),y0o=(TEAR_CY-r[1]*Math.sin(a0)).toFixed(2);
+    var x1o=(TEAR_CX+r[1]*Math.cos(a1)).toFixed(2),y1o=(TEAR_CY-r[1]*Math.sin(a1)).toFixed(2);
+    var x1i=(TEAR_CX+r[0]*Math.cos(a1)).toFixed(2),y1i=(TEAR_CY-r[0]*Math.sin(a1)).toFixed(2);
+    var x0i=(TEAR_CX+r[0]*Math.cos(a0)).toFixed(2),y0i=(TEAR_CY-r[0]*Math.sin(a0)).toFixed(2);
+    var on=Math.abs(k-off)<0.5;
+    out+='<path d="M'+x0o+' '+y0o+' A'+r[1]+' '+r[1]+' 0 0 0 '+x1o+' '+y1o+' L'+x1i+' '+y1i+' A'+r[0]+' '+r[0]+' 0 0 1 '+x0i+' '+y0i+' Z" fill="'+(on?'#17181A':'#FFFFFF')+'" stroke="rgba(240,241,243,.9)" stroke-width="1.2" onclick="__dialPick__('+ring+','+k+')" style="cursor:pointer"/>';
+    var am=(90-c)*Math.PI/180,tm=(r[0]+r[1])/2;
+    var tx=(TEAR_CX+tm*Math.cos(am)).toFixed(1),ty=(TEAR_CY-tm*Math.sin(am)+5).toFixed(1);
+    var fs=ring===0?13:16;
+    out+='<text x="'+tx+'" y="'+ty+'" text-anchor="middle" font-size="'+fs+'" font-weight="700" fill="'+(on?'#FFFFFF':'#9AA0A8')+'" pointer-events="none">'+__tearLabel__(ring,k)+'</text>';
   }
   return out;
 }
+// 倾斜水滴：尖端在左下（对齐明细按钮），主体右移占满屏宽，最宽处容纳三环
+var TEAR_PATH='M46 332 C64 276 62 220 62 152 C62 94 102 62 150 62 C198 62 238 94 238 152 C238 224 176 282 46 332 Z';
 function __tearSVG__(){
   if(!__dialSel__)return '';
-  var years=__dialSel__.years,days=__dialDays__();
-  return '<svg viewBox="0 0 230 300" xmlns="http://www.w3.org/2000/svg">'
-    +'<defs><clipPath id="__tear_clip__"><path d="M115 297 C76 246 47 196 47 128 C47 82 77 52 115 52 C153 52 183 82 183 128 C183 196 154 246 115 297 Z"/></clipPath></defs>'
-    +'<path d="M115 297 C76 246 47 196 47 128 C47 82 77 52 115 52 C153 52 183 82 183 128 C183 196 154 246 115 297 Z" fill="#FFFFFF" stroke="rgba(233,234,236,.95)" stroke-width="1.5"/>'
+  var o=__dialSel__.off;
+  return '<svg viewBox="0 0 280 340" xmlns="http://www.w3.org/2000/svg">'
+    +'<defs><clipPath id="__tear_clip__"><path d="'+TEAR_PATH+'"/></clipPath></defs>'
+    +'<path d="'+TEAR_PATH+'" fill="#FFFFFF" stroke="rgba(233,234,236,.95)" stroke-width="1.5"/>'
     +'<g clip-path="url(#__tear_clip__)">'
-    +__tearRingPaths__(2,days.length,102,84,__dialSel__.d)
-    +__tearRingPaths__(1,12,82,64,__dialSel__.m-1)
-    +__tearRingPaths__(0,years.length,62,42,__dialSel__.yi)
-    +'<text x="115" y="203" text-anchor="middle" font-size="11" font-weight="700" fill="#8A8F98">日</text>'
-    +'<text x="115" y="224" text-anchor="middle" font-size="11" font-weight="700" fill="#8A8F98">月</text>'
-    +'<text x="115" y="246" text-anchor="middle" font-size="11" font-weight="700" fill="#8A8F98">年</text>'
+    +__tearRingPaths__(2,__dialDays__().length,o[2])
+    +__tearRingPaths__(1,12,o[1])
+    +__tearRingPaths__(0,__dialSel__.years.length,o[0])
     +'</g>'
     +'</svg>';
 }
-function __dialReadout__(){
-  if(!__dialSel__)return '';
-  var y=__dialSel__.years[__dialSel__.yi],days=__dialDays__(),d=days[__dialSel__.d];
-  return y+'年'+__dialSel__.m+'月'+(d?(' · '+d+'日'):'');
+// 平滑滚动动画：off 逐帧逼近目标索引
+var __tearRaf__=null;
+function __tearAnim__(){
+  if(__tearRaf__)return;
+  function step(){
+    var done=true,o=__dialSel__&&__dialSel__.off;
+    if(o){
+      var tgt=[__dialSel__.yi,__dialSel__.m-1,__dialSel__.d];
+      for(var i=0;i<3;i++){var df=tgt[i]-o[i];if(Math.abs(df)>0.02){o[i]+=df*0.28;done=false}else o[i]=tgt[i]}
+    }
+    var body=document.getElementById('__tear_body__');
+    if(body&&__dialSel__)body.innerHTML=__tearSVG__();
+    if(!done&&__dialSel__){__tearRaf__=requestAnimationFrame(step)}else{__tearRaf__=null}
+  }
+  __tearRaf__=requestAnimationFrame(step);
 }
-function __syncTearDial__(){
-  if(!__dialOpen__)return;
-  var body=document.getElementById('__tear_body__');if(body)body.innerHTML=__tearSVG__();
-  var val=document.getElementById('__tear_val__');if(val)val.textContent=__dialReadout__();
-}
-// 点击环段：ring 0=年 1=月 2=日；选择后实时联动页面数据
+// 点击环段：ring 0=年 1=月 2=日；选择后平滑滚动并实时联动页面数据
 function __dialPick__(ring,k){
   if(!__dialSel__)return;
   if(ring===0){__dialSel__.yi=k;__dialSel__.d=0}
@@ -1144,7 +1150,7 @@ function __dialPick__(ring,k){
   else{__dialSel__.d=k}
   var days=__dialDays__();
   if(__dialSel__.d>=days.length)__dialSel__.d=0;
-  __syncTearDial__();
+  __tearAnim__();
   __applyDialSelection__();
 }
 // 把转盘选择应用到页面：年+月→recordPeriod；日=无→整月(1号在最底倒序)；日有值→仅该日(并滚动定位)
@@ -1157,62 +1163,92 @@ function __applyDialSelection__(){
   if(state.recordDay)__scrollToDate__=state.recordDay;
   if(state.tab!=='record')switchTab('record');else render();
 }
-// 滚轮/触摸滚动步进某环：dir 1=下一段 -1=上一段
-function __dialStep__(ring,dir){
-  if(!__dialSel__)return;
-  var n=ring===0?__dialSel__.years.length:(ring===1?12:__dialDays__().length);
-  if(!n)return;
-  var cur=ring===0?__dialSel__.yi:(ring===1?__dialSel__.m-1:__dialSel__.d);
-  var k=(cur+dir%n+n)%n;
-  __dialPick__(ring,k);
-}
-// 指针位置→所在环（距半圆中心 (115,292) 的半径）
+// 指针位置→所在环（距环心 (150,158) 的半径）
 function __dialRingAt__(clientX,clientY){
   var body=document.getElementById('__tear_body__');if(!body)return null;
   var svg=body.querySelector('svg');if(!svg)return null;
   var r=svg.getBoundingClientRect();
-  var sx=(clientX-r.left)/r.width*230,sy=(clientY-r.top)/r.height*300;
-  var dist=Math.sqrt((sx-115)*(sx-115)+(292-sy)*(292-sy));
-  if(sy>292)return null;
-  if(dist>=83&&dist<=104)return 2;
-  if(dist>=63&&dist<=83)return 1;
-  if(dist>=38&&dist<=63)return 0;
+  var sx=(clientX-r.left)/r.width*280,sy=(clientY-r.top)/r.height*340;
+  var dist=Math.sqrt((sx-150)*(sx-150)+(158-sy)*(158-sy));
+  if(dist>=70&&dist<=94)return 2;
+  if(dist>=48&&dist<=72)return 1;
+  if(dist>=24&&dist<=50)return 0;
   return null;
+}
+// 指针位置→环上的角度偏移（用于拖拽滚动，顶部为 0，向右为正）
+function __dialAngleAt__(clientX,clientY){
+  var body=document.getElementById('__tear_body__');if(!body)return 0;
+  var svg=body.querySelector('svg');if(!svg)return 0;
+  var r=svg.getBoundingClientRect();
+  var sx=(clientX-r.left)/r.width*280,sy=(clientY-r.top)/r.height*340;
+  return 90-Math.atan2(158-sy,sx-150)*180/Math.PI;
+}
+var __tearDrag__=null; // {ring, lastA, moved}
+function __tearDragMove__(clientX,clientY){
+  if(!__tearDrag__||!__dialSel__)return;
+  var ring=__tearDrag__.ring;
+  var n=ring===0?__dialSel__.years.length:(ring===1?12:__dialDays__().length);
+  var segA=__tearSegA__(ring);
+  var a=__dialAngleAt__(clientX,clientY);
+  var dSeg=(a-__tearDrag__.lastA)/segA;
+  if(Math.abs(a-__tearDrag__.lastA)>0.5)__tearDrag__.moved=true;
+  __tearDrag__.lastA=a;
+  __tearDrag__.vel=dSeg;
+  var cur=ring===0?__dialSel__.yi:(ring===1?__dialSel__.m-1:__dialSel__.d);
+  var off=cur+dSeg;
+  off=Math.max(0,Math.min(n-1,off));
+  __dialSel__.off[ring]=off;
+  var body=document.getElementById('__tear_body__');
+  if(body)body.innerHTML=__tearSVG__();
+}
+var __tearClickSup__=0;
+function __tearDragEnd__(){
+  if(!__tearDrag__||!__dialSel__)return;
+  var ring=__tearDrag__.ring,drag=__tearDrag__;__tearDrag__=null;
+  if(drag.moved)__tearClickSup__=Date.now()+400; // 拖拽后抑制 click，避免误点段
+  var n=ring===0?__dialSel__.years.length:(ring===1?12:__dialDays__().length);
+  var off=__dialSel__.off[ring];
+  var k=Math.round(off+(drag.vel||0)*4); // 惯性：按末速度多滑几段
+  k=Math.max(0,Math.min(n-1,k));
+  __dialPick__(ring,k);
 }
 function openTearDial(){
   if(__dialOpen__){closeTearDial();return}
   var cur=state.recordPeriod||new Date().toISOString().slice(0,7);
   var years=getRecordYears(),yi=years.indexOf(cur.slice(0,4));
   if(yi<0)yi=0;
-  var days=[0].concat(__dialMonthDays__(years[yi],parseInt(cur.slice(5,7),10)));
-  var di=0;
-  if(state.recordDay&&state.recordDay.slice(0,7)===cur)di=days.indexOf(parseInt(state.recordDay.slice(8,10),10));
-  if(di<0)di=0;
-  __dialSel__={years:years,yi:yi,m:parseInt(cur.slice(5,7),10),d:di};
+  var m=parseInt(cur.slice(5,7),10);
+  var di=state.recordDay&&state.recordDay.slice(0,7)===cur?parseInt(state.recordDay.slice(8,10),10):0;
+  __dialSel__={years:years,yi:yi,m:m,d:di,off:[yi,m-1,di]};
   var old=document.getElementById('__tear_dial__');if(old&&old.parentNode)old.parentNode.removeChild(old);
   var tmp=document.createElement('div');
-  tmp.innerHTML='<div id="__tear_dial__" class="tear-dial tear-dial--open"><div class="tear-dial__body" id="__tear_body__">'+__tearSVG__()+'</div><div class="tear-dial__val" id="__tear_val__">'+__dialReadout__()+'</div></div>';
+  tmp.innerHTML='<div id="__tear_dial__" class="tear-dial tear-dial--open"><div class="tear-dial__body" id="__tear_body__">'+__tearSVG__()+'</div></div>';
   var dialEl=tmp.firstElementChild;
-  // 水滴尖端对齐"明细"按钮中心
+  // 水滴尖端（svg x=46）对齐"明细"按钮中心，且不超出屏幕
   var tabEl=document.querySelector('.tab-item[aria-label="明细"]');
   var lx=window.innerWidth*0.2;
   if(tabEl){var tr=tabEl.getBoundingClientRect();lx=tr.left+tr.width/2}
-  dialEl.style.left=lx+'px';
+  var left=lx-46;
+  left=Math.max(4,Math.min(window.innerWidth-284,left));
+  dialEl.style.left=left+'px';
   document.body.appendChild(dialEl);
-  // 滚轮 / 触摸上下滑动 = 滚动选择所在环
-  dialEl.addEventListener('wheel',function(e){e.preventDefault();var ring=__dialRingAt__(e.clientX,e.clientY);if(ring!==null)__dialStep__(ring,e.deltaY>0?1:-1)},{passive:false});
-  var ty0=0,tring=null;
-  dialEl.addEventListener('touchstart',function(e){var t=e.touches[0];ty0=t.clientY;tring=__dialRingAt__(t.clientX,t.clientY)},{passive:true});
-  dialEl.addEventListener('touchmove',function(e){if(tring===null)return;e.preventDefault();var t=e.touches[0];var dy=ty0-t.clientY;if(Math.abs(dy)>=22){__dialStep__(tring,dy>0?1:-1);ty0=t.clientY}},{passive:false});
+  // 滚轮横向滚动 = 步进所在环
+  dialEl.addEventListener('wheel',function(e){e.preventDefault();var ring=__dialRingAt__(e.clientX,e.clientY);if(ring===null)return;var dir=(Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY)>0?1:-1;var n=ring===0?__dialSel__.years.length:(ring===1?12:__dialDays__().length);var curI=ring===0?__dialSel__.yi:(ring===1?__dialSel__.m-1:__dialSel__.d);__dialPick__(ring,Math.max(0,Math.min(n-1,curI+dir)))},{passive:false});
+  // 触摸/鼠标左右拨动 = 流畅滚动 + 惯性
+  function down(x,y){var ring=__dialRingAt__(x,y);if(ring===null)return;__tearDrag__={ring:ring,lastA:__dialAngleAt__(x,y),moved:false,vel:0}}
+  dialEl.addEventListener('pointerdown',function(e){down(e.clientX,e.clientY)});
+  dialEl.addEventListener('pointermove',function(e){if(__tearDrag__){e.preventDefault();__tearDragMove__(e.clientX,e.clientY)}});
+  dialEl.addEventListener('pointerup',__tearDragEnd__);
+  dialEl.addEventListener('pointercancel',__tearDragEnd__);
+  dialEl.addEventListener('touchmove',function(e){if(__tearDrag__)e.preventDefault()},{passive:false});
+  dialEl.addEventListener('click',function(e){if(Date.now()<__tearClickSup__){e.stopPropagation();e.preventDefault()}},true);
   __dialOpen__=true;
-  if(tabEl)tabEl.classList.add('tab-item--dialing');
 }
 function closeTearDial(){
   if(!__dialOpen__)return;
   __dialOpen__=false;__dialSel__=null;
   var el=document.getElementById('__tear_dial__');
   if(el){el.classList.remove('tear-dial--open');setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el)},420)}
-  var tab=document.querySelector('.tab-item[aria-label="明细"]');if(tab)tab.classList.remove('tab-item--dialing');
 }
 // 导航栏长按（450ms）触发；短按仍为普通切换；长按抬起后的 click 被吞掉防止误切换
 // 事件委托到 document：render 重建导航 DOM 后依然有效
@@ -1530,8 +1566,6 @@ function render(){
     var sc=document.querySelector('.tx-scroll'),el=document.querySelector('.tx-date-group[data-date="'+sd+'"]');
     if(sc&&el)sc.scrollTop=Math.max(0,el.offsetTop-8);
   }
-  // 转盘开启中：render 重建导航后保持图标隐藏
-  if(__dialOpen__){var dt=document.querySelector('.tab-item[aria-label="明细"]');if(dt)dt.classList.add('tab-item--dialing')}
 }
 
 function init(){
