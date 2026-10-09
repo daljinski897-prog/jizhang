@@ -1039,6 +1039,12 @@ function saveManual(){
 }
 function deleteTx(id){deleteTransaction(id).then(function(){state.txs=JSON.parse(localStorage.getItem('aiBillTxs')||'[]');render();showToast('已删除')})}
 function switchTab(tab){state.tab=tab;closeCreateMenu();render()}
+// 导航点击：水滴转盘开启时，点任意导航（含明细）先关闭转盘
+function __tabClick__(tab){
+  if(__dialOpen__){closeTearDial();if(tab==='record')return}
+  if(tab==='soon'){showSoon();return}
+  switchTab(tab);
+}
 function showSoon(){var t=document.createElement('div');t.className='soon-toast';t.textContent='敬请期待';document.body.appendChild(t);setTimeout(function(){t.remove()},1400)}
 function switchStatDim(dim){
   if(dim===state.statDim)return;
@@ -1254,7 +1260,11 @@ function openTearDial(){
   dialEl.addEventListener('wheel',function(e){e.preventDefault();var ring=__dialRingAt__(e.clientX,e.clientY);if(ring===null)return;var dir=(Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY)>0?1:-1;var n=ring===0?__dialSel__.years.length:(ring===1?12:__dialDays__().length);var curI=ring===0?__dialSel__.yi:(ring===1?__dialSel__.m-1:__dialSel__.d);__dialPick__(ring,Math.max(0,Math.min(n-1,curI+dir)))},{passive:false});
   // 触摸/鼠标左右拨动 = 流畅滚动 + 惯性
   function down(x,y){var ring=__dialRingAt__(x,y);if(ring===null)return;__tearDrag__={ring:ring,lastA:__dialAngleAt__(x,y),moved:false,vel:0}}
-  dialEl.addEventListener('pointerdown',function(e){down(e.clientX,e.clientY)});
+  dialEl.addEventListener('pointerdown',function(e){
+    // 触摸指针有隐式捕获：拖拽中 innerHTML 重建会移除被捕获元素导致指针流中断，故显式捕获到容器
+    try{dialEl.setPointerCapture(e.pointerId)}catch(_){}
+    down(e.clientX,e.clientY);
+  });
   dialEl.addEventListener('pointermove',function(e){if(__tearDrag__){e.preventDefault();__tearDragMove__(e.clientX,e.clientY)}});
   dialEl.addEventListener('pointerup',__tearDragEnd__);
   dialEl.addEventListener('pointercancel',__tearDragEnd__);
@@ -1524,11 +1534,11 @@ function render(){
       +'</div>';
   }
   html+='<div class="tab-bar">'
-    +'<div class="tab-item '+(state.tab==='record'?'active':'')+'" onclick="switchTab(\'record\')" aria-label="明细">'+icon('receipt',21)+'<span class="tab-item__label">明细</span></div>'
-    +'<div class="tab-item '+(state.tab==='stats'?'active':'')+'" onclick="switchTab(\'stats\')" aria-label="统计">'+icon('bar-chart-3',21)+'<span class="tab-item__label">统计</span></div>'
+    +'<div class="tab-item '+(state.tab==='record'?'active':'')+'" onclick="__tabClick__(\'record\')" aria-label="明细">'+icon('receipt',21)+'<span class="tab-item__label">明细</span></div>'
+    +'<div class="tab-item '+(state.tab==='stats'?'active':'')+'" onclick="__tabClick__(\'stats\')" aria-label="统计">'+icon('bar-chart-3',21)+'<span class="tab-item__label">统计</span></div>'
     +'<div class="tab-item tab-item--center" aria-hidden="true"></div>'
-    +'<div class="tab-item" onclick="showSoon()" aria-label="储蓄">'+icon('piggy-bank',21)+'<span class="tab-item__label">储蓄</span></div>'
-    +'<div class="tab-item '+(state.tab==='account'?'active':'')+'" onclick="switchTab(\'account\')" aria-label="账户">'+icon('user',21)+'<span class="tab-item__label">账户</span></div>'
+    +'<div class="tab-item" onclick="__tabClick__(\'soon\')" aria-label="储蓄">'+icon('piggy-bank',21)+'<span class="tab-item__label">储蓄</span></div>'
+    +'<div class="tab-item '+(state.tab==='account'?'active':'')+'" onclick="__tabClick__(\'account\')" aria-label="账户">'+icon('user',21)+'<span class="tab-item__label">账户</span></div>'
     +'</div>';
 
   // Voice modal
